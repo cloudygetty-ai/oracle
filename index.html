@@ -724,6 +724,72 @@
 
   .step-dot.done { background: var(--gold); }
   .step-dot.active { background: var(--gold-dim); }
+
+  /* ── SCREEN 7: LIVE CAMS ── */
+  .cam-grid-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .cam-thumb {
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.15s;
+    position: relative;
+  }
+
+  .cam-thumb:active { border-color: var(--gold); }
+  .cam-thumb.active-cam { border-color: var(--gold); }
+
+  .cam-thumb img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    background: var(--obsidian-3);
+  }
+
+  .cam-thumb-label {
+    padding: 5px 7px;
+    font-size: 9px;
+    color: var(--text-secondary);
+    line-height: 1.3;
+    letter-spacing: 0.03em;
+  }
+
+  .cam-thumb-area {
+    font-size: 8px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .cam-offline {
+    aspect-ratio: 16/9;
+    background: var(--obsidian-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--text-muted);
+  }
+
+  .live-badge {
+    position: absolute;
+    top: 5px; left: 5px;
+    background: rgba(192,57,43,0.85);
+    color: white;
+    font-size: 8px;
+    padding: 2px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    font-family: 'DM Mono', monospace;
+  }
 </style>
 </head>
 <body>
@@ -1067,6 +1133,57 @@
     </div>
   </div>
 
+  <!-- ── SCREEN 7: LIVE TRAFFIC CAMS ── -->
+  <div class="screen" id="screen-cams">
+    <div class="tool-header">
+      <div class="tool-icon-lg">📷</div>
+      <div>
+        <div class="tool-name">Live Traffic Cams</div>
+        <div class="tool-desc">NYC DOT live feeds — NJ crossings, tunnels, Staten Island, Manhattan approaches.</div>
+      </div>
+    </div>
+
+    <!-- Search + filter -->
+    <input class="input" id="cam-search" placeholder="Search cameras..." oninput="filterCams()" style="margin-bottom:10px">
+
+    <div style="display:flex;gap:6px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px">
+      <button class="btn" id="area-all"  onclick="setAreaFilter('all')"  style="margin-top:0;white-space:nowrap;padding:8px 12px;flex-shrink:0;background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright);font-size:10px">ALL</button>
+      <button class="btn" id="area-si"   onclick="setAreaFilter('si')"   style="margin-top:0;white-space:nowrap;padding:8px 12px;flex-shrink:0;font-size:10px">STATEN IS.</button>
+      <button class="btn" id="area-mhtn" onclick="setAreaFilter('mhtn')" style="margin-top:0;white-space:nowrap;padding:8px 12px;flex-shrink:0;font-size:10px">MANHATTAN</button>
+      <button class="btn" id="area-tun"  onclick="setAreaFilter('tun')"  style="margin-top:0;white-space:nowrap;padding:8px 12px;flex-shrink:0;font-size:10px">TUNNELS</button>
+    </div>
+
+    <div class="stat-grid" style="margin-bottom:12px">
+      <div class="stat-box">
+        <span class="stat-num" id="cam-live-count">59</span>
+        <span class="stat-label">Live Feeds</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="cam-refresh-countdown">30</span>
+        <span class="stat-label">Sec to Refresh</span>
+      </div>
+    </div>
+
+    <!-- Active cam viewer -->
+    <div id="cam-viewer" style="display:none;margin-bottom:12px">
+      <div style="font-size:10px;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px" id="cam-viewer-label">—</div>
+      <div style="position:relative;background:var(--obsidian-3);border:1px solid var(--obsidian-4);border-radius:10px;overflow:hidden">
+        <img id="cam-viewer-img" style="width:100%;display:block;border-radius:10px" alt="Live camera feed">
+        <div id="cam-viewer-ts" style="position:absolute;bottom:6px;right:8px;font-size:9px;color:rgba(255,255,255,0.5);letter-spacing:0.05em"></div>
+        <div id="cam-viewer-loading" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--obsidian-3)">
+          <div class="spinner"></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn" onclick="refreshActiveCam()" style="margin-top:0;flex:1">↻ REFRESH</button>
+        <button class="btn" onclick="closeCamViewer()" style="margin-top:0;width:auto;padding:13px 16px">✕</button>
+      </div>
+    </div>
+
+    <!-- Camera grid -->
+    <div id="cam-grid"></div>
+  </div>
+
 </div><!-- /screens -->
 
 <!-- BOTTOM NAV -->
@@ -1094,6 +1211,10 @@
   <button class="nav-btn" onclick="switchTab('premortem',this)">
     <span class="nav-icon">🔮</span>
     <span class="nav-label">Oracle</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('cams',this)">
+    <span class="nav-icon">📷</span>
+    <span class="nav-label">Live Cams</span>
   </button>
 </nav>
 
@@ -1989,6 +2110,217 @@ function resetPremortem() {
   document.getElementById('pm-plan').value = '';
 }
 </script>
+
+
+// ══════════════════════════════════════════════
+// SCREEN 7: LIVE TRAFFIC CAMS (NYC DOT)
+// API: https://webcams.nyctmc.org/api/cameras
+// Images refresh every 30s, CORS-open JPEGs
+// ══════════════════════════════════════════════
+
+const NYC_CAMS = [
+  {id:'301002c0-fe39-4fad-998a-fdc66e531b1d',name:'Lincoln Tunnel Approach @ W31 St',area:'Manhattan',group:'tun',lat:40.752268,lon:-73.999448},
+  {id:'bb9ce48d-0458-4493-89ad-ae51065b5796',name:'Lincoln Tunnel Approach @ W33 St',area:'Manhattan',group:'tun',lat:40.753522,lon:-73.998587},
+  {id:'25ad72fe-e74c-49af-b4c0-34c9eac14655',name:'Canal St @ Greenwich (Holland Tunnel)',area:'Manhattan',group:'tun',lat:40.725039,lon:-74.01009},
+  {id:'ffae5a99-c403-41aa-9985-0633aee4aeff',name:'Henry Hudson Pkwy @ GWB Ramp',area:'Manhattan',group:'tun',lat:40.84148,lon:-73.9455},
+  {id:'0b7a91d5-e33e-42b3-a05a-951be0ab1663',name:'Staten Island Expy @ Hylan Blvd',area:'Staten Island',group:'si',lat:40.606261,lon:-74.077786},
+  {id:'97315cc7-688a-4139-93de-4c58c59fbede',name:'Staten Island Expy @ West Shore Expy',area:'Staten Island',group:'si',lat:40.62124,lon:-74.168972},
+  {id:'67a7ce68-80ad-46d3-930c-7cf200109be7',name:'Staten Island Expy @ Slosson Ave',area:'Staten Island',group:'si',lat:40.611387,lon:-74.11665},
+  {id:'8246cf40-87f5-4f3a-b987-369e38a2d450',name:'Staten Island Expy @ Forest Ave',area:'Staten Island',group:'si',lat:40.6253,lon:-74.1779},
+  {id:'f68ca680-62ac-4ad5-aa9d-7a83742b15d3',name:'Staten Island Expy @ Fingerboard',area:'Staten Island',group:'si',lat:40.604174,lon:-74.069091},
+  {id:'500b7258-e2ec-4717-8f99-a5497e158ae6',name:'Outerbridge Crossing @ Tyrellan Ave',area:'Staten Island',group:'si',lat:40.525714,lon:-74.230356},
+  {id:'4d92ff93-b8cd-4bec-a70b-91b4cfb75857',name:'Bayonne Bridge Approach NB',area:'Staten Island',group:'si',lat:40.630779,lon:-74.145543},
+  {id:'0f5e11ff-0ecc-4622-a32e-bb80a6b2c1c6',name:'Hylan Blvd @ Arden Ave',area:'Staten Island',group:'si',lat:40.529434,lon:-74.161351},
+  {id:'07f88e60-2b93-4bba-9784-8cac3c9b7f52',name:'SI Expy EB @ West Shore Expy',area:'Staten Island',group:'si',lat:40.622323,lon:-74.174917},
+  {id:'0ff541bf-1be1-4bbf-88c5-3a570541e7d2',name:'Father Capodanno Blvd @ Sands Ln',area:'Staten Island',group:'si',lat:40.590366,lon:-74.066659},
+  {id:'171d87f4-033f-4769-ae00-7819baa8034e',name:'SIE @ Fingerboard Rd',area:'Staten Island',group:'si',lat:40.603841,lon:-74.069281},
+  {id:'2d1ed99a-c3d3-4616-a0d6-a9fe16f3e48c',name:'Staten Island Expy @ Clove Rd',area:'Staten Island',group:'si',lat:40.610941,lon:-74.098029},
+  {id:'24101bcf-29a7-4417-b77d-1f0368dc212d',name:'Hudson St @ Laight St',area:'Manhattan',group:'mhtn',lat:40.721932,lon:-74.008155},
+  {id:'8c1ea3b6-0db6-4222-ba50-2545f8f82d71',name:'Hudson St @ Erickson Pl',area:'Manhattan',group:'mhtn',lat:40.720694,lon:-74.008455},
+  {id:'3a3cf44d-6c42-46fb-b774-1441a8582076',name:'Canal St @ Hudson St',area:'Manhattan',group:'mhtn',lat:40.723677,lon:-74.008095},
+  {id:'0ff11926-fcf0-4e3b-8aea-ffc0ea4f2228',name:'West Houston @ Hudson St',area:'Manhattan',group:'mhtn',lat:40.728739,lon:-74.007137},
+  {id:'35a808cf-7e4d-4ca5-891d-36ac48518662',name:'West Side Hwy BPU Entrance',area:'Manhattan',group:'mhtn',lat:40.7051851,lon:-74.0166288},
+  {id:'97190ee9-e92c-46ef-a3fc-e8c75d416a9a',name:'Henry Hudson Pkwy @ 232 St',area:'Bronx',group:'mhtn',lat:40.884521,lon:-73.914547},
+  {id:'28107d1c-08da-4cd3-9777-09471ca30225',name:'Henry Hudson Pkwy @ 96 St',area:'Manhattan',group:'mhtn',lat:40.795618,lon:-73.976183},
+  {id:'ca545979-d0c1-4735-88d6-61b6311bb6bc',name:'Henry Hudson Pkwy @ 125 St',area:'Manhattan',group:'mhtn',lat:40.818617,lon:-73.96099},
+  {id:'5531396b-856d-429b-8bde-a845ef87aead',name:'Henry Hudson @ 158 St',area:'Manhattan',group:'mhtn',lat:40.835892,lon:-73.948717},
+  {id:'e438c68c-c1e4-4fc1-9d1e-28cab8acb42a',name:'Henry Hudson Pkwy @ 70 St',area:'Manhattan',group:'mhtn',lat:40.779679,lon:-73.988462},
+  {id:'ec1e7b42-18de-4475-8c89-9e80f21e5b6c',name:'FDR Drive @ 122 St',area:'Manhattan',group:'mhtn',lat:40.798685,lon:-73.929148},
+  {id:'155b2bff-5dd2-4109-bd10-e098376c8476',name:'FDR Dr @ 96 St',area:'Manhattan',group:'mhtn',lat:40.7821,lon:-73.9437},
+  {id:'6847c104-0117-4e3f-b30e-e1a859bc8107',name:'FDR Dr @ 101 St',area:'Manhattan',group:'mhtn',lat:40.785502,lon:-73.94032},
+  {id:'ecba28cb-ac70-4d25-abcb-6506111ea120',name:'FDR Dr @ Brooklyn Bridge',area:'Manhattan',group:'mhtn',lat:40.708414,lon:-73.998515},
+  {id:'5adef8a1-5ad0-4a73-8d87-e1e545ba8cbb',name:'FDR Dr @ 73 St',area:'Manhattan',group:'mhtn',lat:40.766599,lon:-73.950845},
+  {id:'04ffc69c-92a7-4c02-aa18-2b16e7ba81f2',name:'FDR Dr @ 36 St',area:'Manhattan',group:'mhtn',lat:40.744441,lon:-73.971242},
+  {id:'4048d465-2272-446e-bccb-c49ea6d62bd3',name:'FDR Dr @ BPU Entrance',area:'Manhattan',group:'mhtn',lat:40.701797,lon:-74.010764},
+  {id:'9fda4742-9a18-4a32-b090-8825b201f0d5',name:'FDR Drive @ 124 St',area:'Manhattan',group:'mhtn',lat:40.799477,lon:-73.929293},
+  {id:'beda95e2-f7d1-43a3-9a8b-7ab89e03f296',name:'FDR Dr @ Catherine St',area:'Manhattan',group:'mhtn',lat:40.708979,lon:-73.996036},
+  {id:'3309fba1-cc5f-483a-92bc-7d85951f1558',name:'FDR Dr @ Old Slip',area:'Manhattan',group:'mhtn',lat:40.703095,lon:-74.007681},
+  {id:'23cb2c44-1a40-4950-a914-ee7f1390553c',name:'West Shore Expy @ Arden Ave',area:'Staten Island',group:'si',lat:40.559754,lon:-74.199386},
+  {id:'34af619f-c745-4f09-a81c-e3635dd764c6',name:'Richmond Ave @ Forest Ave',area:'Staten Island',group:'si',lat:40.625094,lon:-74.148789},
+  {id:'1389ca99-0d3f-4c27-bc45-b0aa238ea7d2',name:'SIE @ Richmond Ave',area:'Staten Island',group:'si',lat:40.614885,lon:-74.157435},
+  {id:'6cc9b754-096d-4c5c-94b7-64f6b69523d5',name:'West Shore Expy NB @ Bloomfield Ave',area:'Staten Island',group:'si',lat:40.612239,lon:-74.180319},
+  {id:'01ffcaef-7c54-4f16-8668-bce6efbcfcb1',name:'Hylan Ave @ Page Ave',area:'Staten Island',group:'si',lat:40.507726,lon:-74.230003},
+];
+
+const CAM_IMAGE_BASE = 'https://webcams.nyctmc.org/api/cameras/';
+let activeCamId = null;
+let camAreaFilter = 'all';
+let camSearchTerm = '';
+let camRefreshInterval = null;
+let camCountdown = 30;
+let camCountdownInterval = null;
+
+function camImageUrl(id) {
+  return CAM_IMAGE_BASE + id + '/image?t=' + Date.now();
+}
+
+function setAreaFilter(area) {
+  camAreaFilter = area;
+  ['all','si','mhtn','tun'].forEach(a => {
+    const btn = document.getElementById('area-' + a);
+    if (!btn) return;
+    if (a === area) {
+      btn.style.background = 'var(--gold-dim)';
+      btn.style.borderColor = 'var(--gold)';
+      btn.style.color = 'var(--gold-bright)';
+    } else {
+      btn.style.background = 'var(--obsidian-3)';
+      btn.style.borderColor = 'var(--obsidian-4)';
+      btn.style.color = 'var(--gold)';
+    }
+  });
+  renderCamGrid();
+}
+
+function filterCams() {
+  camSearchTerm = document.getElementById('cam-search').value.toLowerCase();
+  renderCamGrid();
+}
+
+function getFilteredCams() {
+  let filtered = NYC_CAMS;
+  if (camAreaFilter !== 'all') filtered = filtered.filter(c => c.group === camAreaFilter);
+  if (camSearchTerm) filtered = filtered.filter(c =>
+    c.name.toLowerCase().includes(camSearchTerm) ||
+    c.area.toLowerCase().includes(camSearchTerm)
+  );
+  return filtered;
+}
+
+function renderCamGrid() {
+  const filtered = getFilteredCams();
+  document.getElementById('cam-live-count').textContent = filtered.length;
+  const grid = document.getElementById('cam-grid');
+
+  if (!filtered.length) {
+    grid.innerHTML = '<div class="empty-state"><div class="empty-icon">📷</div>No cameras match your filter.</div>';
+    return;
+  }
+
+  // Build 2-column grid
+  grid.innerHTML = '<div class="cam-grid-wrap">' + filtered.map(cam => `
+    <div class="cam-thumb${activeCamId === cam.id ? ' active-cam' : ''}" id="thumb-${cam.id}" onclick="openCam('${cam.id}','${cam.name.replace(/'/g,"\'")}')">
+      <div class="live-badge">LIVE</div>
+      <img
+        src="${camImageUrl(cam.id)}"
+        alt="${cam.name}"
+        loading="lazy"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
+        onload="this.nextElementSibling.style.display='none'"
+      >
+      <div class="cam-offline" style="display:none">📷</div>
+      <div class="cam-thumb-label">
+        <div class="cam-thumb-area">${cam.area}</div>
+        ${cam.name}
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+function openCam(id, name) {
+  activeCamId = id;
+
+  // Highlight active thumb
+  document.querySelectorAll('.cam-thumb').forEach(el => el.classList.remove('active-cam'));
+  const thumb = document.getElementById('thumb-' + id);
+  if (thumb) thumb.classList.add('active-cam');
+
+  const viewer = document.getElementById('cam-viewer');
+  const img = document.getElementById('cam-viewer-img');
+  const label = document.getElementById('cam-viewer-label');
+  const loading = document.getElementById('cam-viewer-loading');
+  const ts = document.getElementById('cam-viewer-ts');
+
+  label.textContent = name;
+  loading.style.display = 'flex';
+  viewer.style.display = 'block';
+
+  img.onload = () => {
+    loading.style.display = 'none';
+    ts.textContent = new Date().toLocaleTimeString();
+  };
+  img.onerror = () => {
+    loading.style.display = 'none';
+    ts.textContent = 'Feed unavailable';
+  };
+  img.src = camImageUrl(id);
+
+  // Scroll to viewer
+  viewer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Auto-refresh viewer every 30s
+  clearInterval(camRefreshInterval);
+  camRefreshInterval = setInterval(refreshActiveCam, 30000);
+  startCountdown();
+}
+
+function refreshActiveCam() {
+  if (!activeCamId) return;
+  const img = document.getElementById('cam-viewer-img');
+  const loading = document.getElementById('cam-viewer-loading');
+  const ts = document.getElementById('cam-viewer-ts');
+  loading.style.display = 'flex';
+  img.onload = () => { loading.style.display = 'none'; ts.textContent = new Date().toLocaleTimeString(); };
+  img.onerror = () => { loading.style.display = 'none'; };
+  img.src = camImageUrl(activeCamId);
+
+  // Refresh thumbnail too
+  const thumb = document.getElementById('thumb-' + activeCamId);
+  if (thumb) {
+    const thumbImg = thumb.querySelector('img');
+    if (thumbImg) thumbImg.src = camImageUrl(activeCamId);
+  }
+  startCountdown();
+}
+
+function startCountdown() {
+  clearInterval(camCountdownInterval);
+  camCountdown = 30;
+  document.getElementById('cam-refresh-countdown').textContent = camCountdown;
+  camCountdownInterval = setInterval(() => {
+    camCountdown--;
+    const el = document.getElementById('cam-refresh-countdown');
+    if (el) el.textContent = Math.max(camCountdown, 0);
+    if (camCountdown <= 0) clearInterval(camCountdownInterval);
+  }, 1000);
+}
+
+function closeCamViewer() {
+  activeCamId = null;
+  clearInterval(camRefreshInterval);
+  clearInterval(camCountdownInterval);
+  document.getElementById('cam-viewer').style.display = 'none';
+  document.querySelectorAll('.cam-thumb').forEach(el => el.classList.remove('active-cam'));
+}
+
+// Init cam grid when tab is first opened
+const origSwitchTab = switchTab;
+function switchTab(name, btn) {
+  origSwitchTab(name, btn);
+  if (name === 'cams' && document.getElementById('cam-grid').innerHTML === '') {
+    renderCamGrid();
+  }
+}
 
 <script>
 // Service Worker Registration

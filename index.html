@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<!-- ORACLE v1.3 | 2026-06-29 -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -982,7 +983,7 @@
     <div id="scanner-widget-wrap" style="margin-bottom:12px;display:none">
       <div style="font-size:10px;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px" id="widget-label">—</div>
       <iframe id="scanner-widget"
-        style="width:100%;height:80px;border:none;border-radius:8px;background:var(--obsidian-3)"
+        style="width:100%;height:130px;border:none;border-radius:8px;background:var(--obsidian-3)"
         allow="autoplay" loading="lazy"></iframe>
       <button class="btn" onclick="stopScanner()" style="margin-top:8px">&#9632; STOP FEED</button>
     </div>
@@ -1770,13 +1771,18 @@ function switchState(state) {
   document.getElementById('scanner-pa').style.display = state === 'pa' ? 'block' : 'none';
   const njBtn = document.getElementById('tab-nj');
   const paBtn = document.getElementById('tab-pa');
-  if (state === 'nj') {
-    njBtn.style.cssText += ';background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)';
-    paBtn.style.cssText += ';background:var(--obsidian-3);border-color:var(--obsidian-4);color:var(--gold)';
-  } else {
-    paBtn.style.cssText += ';background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)';
-    njBtn.style.cssText += ';background:var(--obsidian-3);border-color:var(--obsidian-4);color:var(--gold)';
+  function setActive(btn) {
+    btn.style.background = 'var(--gold-dim)';
+    btn.style.borderColor = 'var(--gold)';
+    btn.style.color = 'var(--gold-bright)';
   }
+  function setInactive(btn) {
+    btn.style.background = 'var(--obsidian-3)';
+    btn.style.borderColor = 'var(--obsidian-4)';
+    btn.style.color = 'var(--gold)';
+  }
+  if (state === 'nj') { setActive(njBtn); setInactive(paBtn); }
+  else { setActive(paBtn); setInactive(njBtn); }
 }
 
 function buildChannelList(feeds, containerId) {

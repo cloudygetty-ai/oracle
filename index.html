@@ -742,7 +742,7 @@
       <div class="tool-icon-lg">📸</div>
       <div>
         <div class="tool-name">Speed Camera Map</div>
-        <div class="tool-desc">NJ speed & red-light cameras. Sorted by distance from you.</div>
+        <div class="tool-desc">NJ + PA speed & red-light cameras. Sorted by distance.</div>
       </div>
     </div>
 
@@ -760,6 +760,12 @@
         <span class="stat-num" id="cam-nearest">—</span>
         <span class="stat-label">Nearest (mi)</span>
       </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-bottom:4px">
+      <button class="btn" id="cam-tab-all" onclick="setCamFilter('all')" style="margin-top:0;flex:1;background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)">ALL</button>
+      <button class="btn" id="cam-tab-nj"  onclick="setCamFilter('nj')"  style="margin-top:0;flex:1">NJ</button>
+      <button class="btn" id="cam-tab-pa"  onclick="setCamFilter('pa')"  style="margin-top:0;flex:1">PA</button>
     </div>
 
     <div class="section-title">Nearby Cameras</div>
@@ -1105,22 +1111,71 @@ function switchTab(name, btn) {
 // SCREEN 1: SPEED CAMERA MAP
 // ══════════════════════════════════════════════
 // NJ speed camera dataset (crowd-sourced, notable locations)
-const NJ_CAMERAS = [
-  { name: 'NJ Turnpike MP 13 — Woodbridge', type: 'speed', lat: 40.5571, lon: -74.2862, limit: 65 },
-  { name: 'GSP MP 100 — Woodbridge', type: 'speed', lat: 40.5478, lon: -74.2918, limit: 65 },
-  { name: 'Rt 1 & 9 — Jersey City', type: 'red-light', lat: 40.7282, lon: -74.0776, limit: 35 },
-  { name: 'Rt 3 — Clifton', type: 'avg', lat: 40.8579, lon: -74.1473, limit: 55 },
-  { name: 'Rt 22 — Union', type: 'red-light', lat: 40.6934, lon: -74.2896, limit: 45 },
-  { name: 'Rt 9 — Sayreville', type: 'speed', lat: 40.4718, lon: -74.3604, limit: 45 },
-  { name: 'I-287 — Edison', type: 'speed', lat: 40.5187, lon: -74.4121, limit: 65 },
-  { name: 'Rt 35 — Eatontown', type: 'red-light', lat: 40.2957, lon: -74.0584, limit: 45 },
-  { name: 'Rt 130 — Burlington', type: 'avg', lat: 40.0712, lon: -74.8604, limit: 50 },
-  { name: 'NJ Turnpike MP 67 — Newark', type: 'speed', lat: 40.7357, lon: -74.1724, limit: 55 },
-  { name: 'Rt 46 — Parsippany', type: 'red-light', lat: 40.8579, lon: -74.4218, limit: 45 },
-  { name: 'GSP MP 142 — Paramus', type: 'speed', lat: 40.9441, lon: -74.0687, limit: 65 },
+const ALL_CAMERAS = [
+  // ── NEW JERSEY ──
+  { name: 'NJ Turnpike MP 13 — Woodbridge',   state:'nj', type:'speed',     lat:40.5571, lon:-74.2862, limit:65 },
+  { name: 'GSP MP 100 — Woodbridge',           state:'nj', type:'speed',     lat:40.5478, lon:-74.2918, limit:65 },
+  { name: 'GSP MP 142 — Paramus',              state:'nj', type:'speed',     lat:40.9441, lon:-74.0687, limit:65 },
+  { name: 'NJ Turnpike MP 67 — Newark',        state:'nj', type:'speed',     lat:40.7357, lon:-74.1724, limit:55 },
+  { name: 'NJ Turnpike MP 7 — Edison',         state:'nj', type:'speed',     lat:40.5070, lon:-74.3350, limit:65 },
+  { name: 'I-287 — Edison',                    state:'nj', type:'speed',     lat:40.5187, lon:-74.4121, limit:65 },
+  { name: 'I-95 — Fort Lee',                   state:'nj', type:'speed',     lat:40.8501, lon:-73.9707, limit:55 },
+  { name: 'Rt 9 — Sayreville',                 state:'nj', type:'speed',     lat:40.4718, lon:-74.3604, limit:45 },
+  { name: 'Rt 3 — Clifton Avg Zone',           state:'nj', type:'avg',       lat:40.8579, lon:-74.1473, limit:55 },
+  { name: 'Rt 130 — Burlington Avg Zone',      state:'nj', type:'avg',       lat:40.0712, lon:-74.8604, limit:50 },
+  { name: 'Rt 1 & 9 — Jersey City',            state:'nj', type:'red-light', lat:40.7282, lon:-74.0776, limit:35 },
+  { name: 'Rt 22 — Union',                     state:'nj', type:'red-light', lat:40.6934, lon:-74.2896, limit:45 },
+  { name: 'Rt 35 — Eatontown',                 state:'nj', type:'red-light', lat:40.2957, lon:-74.0584, limit:45 },
+  { name: 'Rt 46 — Parsippany',                state:'nj', type:'red-light', lat:40.8579, lon:-74.4218, limit:45 },
+  { name: 'Rt 27 — New Brunswick',             state:'nj', type:'red-light', lat:40.4862, lon:-74.4496, limit:35 },
+  { name: 'Rt 4 — Paramus',                    state:'nj', type:'red-light', lat:40.9301, lon:-74.0718, limit:45 },
+  { name: 'Rt 17 — Ramsey',                    state:'nj', type:'red-light', lat:41.0587, lon:-74.1418, limit:45 },
+  { name: 'Rt 9 — Freehold',                   state:'nj', type:'red-light', lat:40.2615, lon:-74.2729, limit:40 },
+  { name: 'Rt 70 — Cherry Hill',               state:'nj', type:'red-light', lat:39.9340, lon:-74.9918, limit:45 },
+  { name: 'Rt 38 — Mount Holly',               state:'nj', type:'red-light', lat:39.9907, lon:-74.7893, limit:40 },
+  // ── PENNSYLVANIA ──
+  { name: 'I-76 PA Turnpike — King of Prussia', state:'pa', type:'speed',     lat:40.0915, lon:-75.3824, limit:65 },
+  { name: 'I-76 PA Turnpike — Valley Forge',    state:'pa', type:'speed',     lat:40.1015, lon:-75.4524, limit:65 },
+  { name: 'I-76 PA Turnpike — Morgantown',      state:'pa', type:'speed',     lat:40.1540, lon:-75.9018, limit:65 },
+  { name: 'I-76 PA Turnpike — Breezewood',      state:'pa', type:'speed',     lat:39.9918, lon:-78.2351, limit:65 },
+  { name: 'I-95 — Philadelphia',                state:'pa', type:'speed',     lat:39.9526, lon:-75.1652, limit:55 },
+  { name: 'I-95 — Chester',                     state:'pa', type:'speed',     lat:39.8498, lon:-75.3557, limit:55 },
+  { name: 'I-276 — Willow Grove',               state:'pa', type:'speed',     lat:40.1434, lon:-75.1162, limit:65 },
+  { name: 'I-476 — Blue Route',                 state:'pa', type:'avg',       lat:39.9701, lon:-75.3440, limit:65 },
+  { name: 'I-376 — Pittsburgh',                 state:'pa', type:'speed',     lat:40.4406, lon:-79.9959, limit:55 },
+  { name: 'Rt 30 — Lancaster Avg Zone',         state:'pa', type:'avg',       lat:40.0379, lon:-76.3055, limit:55 },
+  { name: 'Broad St — Philadelphia',            state:'pa', type:'red-light', lat:39.9526, lon:-75.1635, limit:35 },
+  { name: 'Roosevelt Blvd — Philadelphia',      state:'pa', type:'red-light', lat:40.0340, lon:-75.0518, limit:40 },
+  { name: 'Market St — Philadelphia',           state:'pa', type:'red-light', lat:39.9525, lon:-75.1700, limit:35 },
+  { name: 'Rt 611 — Doylestown',                state:'pa', type:'red-light', lat:40.3101, lon:-75.1299, limit:35 },
+  { name: 'Rt 30 — Exton',                      state:'pa', type:'red-light', lat:40.0376, lon:-75.6218, limit:40 },
+  { name: 'Rt 422 — Norristown',                state:'pa', type:'red-light', lat:40.1215, lon:-75.3399, limit:45 },
+  { name: 'Rt 1 — Media',                       state:'pa', type:'red-light', lat:39.9179, lon:-75.3877, limit:35 },
+  { name: 'Rt 30 — Chambersburg',               state:'pa', type:'red-light', lat:39.9373, lon:-77.6611, limit:35 },
+  { name: 'Penn Ave — Pittsburgh',              state:'pa', type:'red-light', lat:40.4423, lon:-79.9742, limit:35 },
+  { name: 'Liberty Ave — Pittsburgh',           state:'pa', type:'red-light', lat:40.4430, lon:-79.9850, limit:35 },
 ];
 
+let camFilter = 'all';
 let userLat = null, userLon = null;
+
+function setCamFilter(f) {
+  camFilter = f;
+  ['all','nj','pa'].forEach(s => {
+    const btn = document.getElementById('cam-tab-' + s);
+    if (!btn) return;
+    if (s === f) {
+      btn.style.background = 'var(--gold-dim)';
+      btn.style.borderColor = 'var(--gold)';
+      btn.style.color = 'var(--gold-bright)';
+    } else {
+      btn.style.background = 'var(--obsidian-3)';
+      btn.style.borderColor = 'var(--obsidian-4)';
+      btn.style.color = 'var(--gold)';
+    }
+  });
+  renderCameras();
+}
 
 function getDistanceMi(lat1, lon1, lat2, lon2) {
   const R = 3958.8;
@@ -1141,29 +1196,33 @@ function refreshCameras() {
 }
 
 function renderCamerasDefault() {
-  // Default to center NJ if no location
-  userLat = 40.2206; userLon = -74.7597;
+  // Default center between NJ + PA if no location
+  userLat = 40.2206; userLon = -75.0100;
   renderCameras();
 }
 
 function renderCameras() {
-  const cameras = NJ_CAMERAS.map(c => ({
+  const source = camFilter === 'all' ? ALL_CAMERAS
+               : ALL_CAMERAS.filter(c => c.state === camFilter);
+
+  const cameras = source.map(c => ({
     ...c, dist: getDistanceMi(userLat, userLon, c.lat, c.lon)
   })).sort((a,b) => a.dist - b.dist);
 
   document.getElementById('cam-count').textContent = cameras.length;
-  document.getElementById('cam-nearest').textContent = cameras[0].dist.toFixed(1);
-  document.getElementById('map-overlay').textContent = `${cameras.length} CAMERAS MAPPED`;
+  document.getElementById('cam-nearest').textContent = cameras[0] ? cameras[0].dist.toFixed(1) : '—';
+  const stateLabel = camFilter === 'nj' ? 'NJ' : camFilter === 'pa' ? 'PA' : 'NJ+PA';
+  document.getElementById('map-overlay').textContent = `${cameras.length} ${stateLabel} CAMERAS`;
 
   drawMapCanvas(cameras);
 
   const list = document.getElementById('camera-list');
-  list.innerHTML = cameras.slice(0,8).map(c => `
+  list.innerHTML = cameras.slice(0,10).map(c => `
     <div class="camera-list-item">
       <div class="camera-dot ${c.type}"></div>
       <div class="camera-info">
         <div class="camera-name">${c.name}</div>
-        <div class="camera-meta">${c.type === 'red-light' ? 'Red Light' : c.type === 'avg' ? 'Avg Speed Zone' : 'Speed Camera'} · ${c.limit} mph limit</div>
+        <div class="camera-meta">${c.type === 'red-light' ? 'Red Light' : c.type === 'avg' ? 'Avg Speed Zone' : 'Speed Camera'} · ${c.limit} mph · <span style="color:var(--gold);font-size:9px">${c.state.toUpperCase()}</span></div>
       </div>
       <div class="camera-dist">${c.dist.toFixed(1)} mi</div>
     </div>

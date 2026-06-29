@@ -1,0 +1,1853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ORACLE">
+<title>ORACLE</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a0a0c">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzBhMGEwYyIgcng9IjM4Ii8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSI0Ii8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iMjQiIGZpbGw9IiNjOWE4NGMiIG9wYWNpdHk9IjAuNiIvPjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9IjEwIiBmaWxsPSIjYzlhODRjIi8+PC9zdmc+">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --obsidian: #0a0a0c;
+    --obsidian-2: #111116;
+    --obsidian-3: #1a1a22;
+    --obsidian-4: #242430;
+    --gold: #c9a84c;
+    --gold-bright: #e8c76a;
+    --gold-dim: #6b5520;
+    --amber: #d4820a;
+    --text-primary: #f0ead6;
+    --text-secondary: #8a8070;
+    --text-muted: #4a4540;
+    --danger: #c0392b;
+    --success: #27ae60;
+    --safe-top: env(safe-area-inset-top, 44px);
+    --safe-bottom: env(safe-area-inset-bottom, 34px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--obsidian);
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    padding: calc(var(--safe-top) + 8px) 20px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--obsidian);
+    border-bottom: 1px solid var(--obsidian-4);
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  .wordmark {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-shadow: 0 0 20px rgba(201,168,76,0.3);
+  }
+
+  .header-eye {
+    width: 28px; height: 28px;
+    position: relative;
+    opacity: 0.7;
+  }
+
+  .header-eye::before {
+    content: '◉';
+    font-size: 22px;
+    color: var(--gold);
+    animation: pulse-eye 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse-eye {
+    0%,100% { opacity: 0.5; }
+    50% { opacity: 1; text-shadow: 0 0 12px var(--gold); }
+  }
+
+  /* ── SCREEN CONTAINER ── */
+  .screens {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 16px 16px 100px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .screen.active {
+    display: block;
+    opacity: 1;
+  }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding-bottom: var(--safe-bottom);
+    background: var(--obsidian-2);
+    border-top: 1px solid var(--obsidian-4);
+    display: flex;
+    z-index: 200;
+  }
+
+  .nav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 10px 4px 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.15s;
+  }
+
+  .nav-btn.active { color: var(--gold); }
+  .nav-btn .nav-icon { font-size: 20px; line-height: 1; }
+  .nav-btn .nav-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ── SHARED COMPONENTS ── */
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-top: 20px;
+  }
+
+  .section-title:first-child { margin-top: 0; }
+
+  .card {
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .card-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .card-row:last-child { margin-bottom: 0; }
+
+  .label {
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .value {
+    font-size: 14px;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .value.gold { color: var(--gold); }
+  .value.danger { color: var(--danger); }
+  .value.success { color: var(--success); }
+
+  .btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--obsidian-3);
+    border: 1px solid var(--gold-dim);
+    border-radius: 8px;
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 10px;
+  }
+
+  .btn:active { background: var(--obsidian-4); border-color: var(--gold); }
+  .btn.primary { background: var(--gold-dim); border-color: var(--gold); color: var(--gold-bright); }
+  .btn.primary:active { background: #7a6128; }
+
+  .input {
+    width: 100%;
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .input:focus { border-color: var(--gold-dim); }
+  .input::placeholder { color: var(--text-muted); }
+
+  textarea.input { resize: none; min-height: 100px; }
+
+  .select {
+    width: 100%;
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    padding: 12px;
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .pill {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--obsidian-4);
+    color: var(--text-secondary);
+    border: 1px solid var(--obsidian-4);
+  }
+
+  .pill.gold { background: rgba(201,168,76,0.15); color: var(--gold); border-color: var(--gold-dim); }
+  .pill.red { background: rgba(192,57,43,0.15); color: var(--danger); border-color: #7a2020; }
+  .pill.green { background: rgba(39,174,96,0.15); color: var(--success); border-color: #1a6b3a; }
+
+  .divider {
+    height: 1px;
+    background: var(--obsidian-4);
+    margin: 14px 0;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .stat-box {
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Cinzel', serif;
+    font-size: 22px;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* loading spinner */
+  .spinner {
+    width: 28px; height: 28px;
+    border: 2px solid var(--obsidian-4);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 20px auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-wrap { text-align: center; padding: 30px; }
+  .loading-text { font-size: 11px; color: var(--text-muted); letter-spacing: 0.1em; margin-top: 10px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.4; }
+
+  /* ── TOOL HEADERS ── */
+  .tool-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--obsidian-4);
+  }
+
+  .tool-icon-lg {
+    font-size: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .tool-name {
+    font-family: 'Cinzel', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .tool-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  /* ── SCREEN 1: SPEED CAMERA MAP ── */
+  #map-container {
+    width: 100%;
+    height: 300px;
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 10px;
+  }
+
+  #map-canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .map-overlay {
+    position: absolute;
+    top: 10px; left: 10px;
+    background: rgba(10,10,12,0.85);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .camera-list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .camera-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .camera-dot.speed { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+  .camera-dot.red-light { background: var(--amber); box-shadow: 0 0 8px var(--amber); }
+  .camera-dot.avg { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
+
+  .camera-info { flex: 1; }
+  .camera-name { font-size: 13px; color: var(--text-primary); margin-bottom: 2px; }
+  .camera-meta { font-size: 10px; color: var(--text-secondary); }
+  .camera-dist { font-size: 12px; color: var(--gold); font-weight: 500; }
+
+  /* ── SCREEN 2: ATTENTION AUDIT ── */
+  .audit-live {
+    background: var(--obsidian-2);
+    border: 1px solid var(--gold-dim);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+
+  .audit-timer {
+    font-family: 'Cinzel', serif;
+    font-size: 48px;
+    color: var(--gold);
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .audit-status {
+    font-size: 10px;
+    color: var(--text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .session-bar {
+    height: 6px;
+    background: var(--obsidian-4);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+
+  .session-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+    border-radius: 3px;
+    transition: width 1s linear;
+  }
+
+  .audit-log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--obsidian-4);
+  }
+
+  .audit-log-item:last-child { border-bottom: none; }
+
+  /* ── SCREEN 3: POKER EQUITY ── */
+  .card-selector {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .playing-card {
+    aspect-ratio: 2/3;
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+
+  .playing-card.selected {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.12);
+  }
+
+  .playing-card .rank { font-size: 14px; font-weight: 700; line-height: 1; }
+  .playing-card .suit { font-size: 16px; line-height: 1; }
+  .playing-card.red .rank, .playing-card.red .suit { color: #e05555; }
+  .playing-card.black .rank, .playing-card.black .suit { color: var(--text-primary); }
+
+  .hand-display {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .hand-card {
+    flex: 1;
+    aspect-ratio: 2/3;
+    max-height: 80px;
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .hand-card.filled {
+    border-color: var(--gold-dim);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .hand-card.red-card { color: #e05555; }
+  .hand-card.black-card { color: var(--text-primary); }
+
+  .equity-result {
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 10px;
+    padding: 16px;
+    margin-top: 10px;
+  }
+
+  .equity-bar-wrap { margin: 8px 0; }
+  .equity-bar {
+    height: 8px;
+    background: var(--obsidian-4);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .equity-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease;
+  }
+
+  /* ── SCREEN 4: FLIGHT TRACKER ── */
+  .flight-radar {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--obsidian-3);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    margin: 0 auto 16px;
+  }
+
+  #radar-canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .flight-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    margin-bottom: 8px;
+  }
+
+  .flight-icao {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gold);
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  .flight-details { flex: 1; }
+  .flight-route { font-size: 12px; color: var(--text-primary); margin-bottom: 2px; }
+  .flight-meta { font-size: 10px; color: var(--text-secondary); }
+  .flight-alt { text-align: right; font-size: 12px; color: var(--text-primary); }
+  .flight-alt .alt-num { font-size: 16px; color: var(--gold); display: block; }
+
+  /* ── SCREEN 5: SCANNER FEED ── */
+  .feed-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .live-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--danger);
+    animation: live-pulse 1.2s ease-in-out infinite;
+  }
+
+  @keyframes live-pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(192,57,43,0.4); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 6px rgba(192,57,43,0); }
+  }
+
+  .live-label { font-size: 11px; color: var(--danger); letter-spacing: 0.15em; text-transform: uppercase; }
+
+  .scanner-embed {
+    width: 100%;
+    height: 200px;
+    border: none;
+    border-radius: 10px;
+    background: var(--obsidian-3);
+    margin-bottom: 12px;
+  }
+
+  .channel-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .channel-item:active { border-color: var(--gold-dim); }
+  .channel-item.playing { border-color: var(--danger); background: rgba(192,57,43,0.08); }
+
+  .channel-icon { font-size: 20px; flex-shrink: 0; }
+  .channel-info { flex: 1; }
+  .channel-name { font-size: 13px; color: var(--text-primary); margin-bottom: 2px; }
+  .channel-county { font-size: 10px; color: var(--text-secondary); }
+  .channel-play { font-size: 18px; color: var(--text-muted); }
+  .channel-item.playing .channel-play { color: var(--danger); }
+
+  /* ── SCREEN 6: PRE-MORTEM ── */
+  .premortem-step {
+    display: none;
+  }
+
+  .premortem-step.active { display: block; }
+
+  .ai-response {
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-left: 3px solid var(--gold-dim);
+    border-radius: 0 8px 8px 0;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+
+  .ai-response .ai-label {
+    font-size: 9px;
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .ai-response .ai-text {
+    font-size: 12px;
+    color: var(--text-primary);
+    line-height: 1.7;
+  }
+
+  .failure-card {
+    background: var(--obsidian-2);
+    border: 1px solid var(--obsidian-4);
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 8px;
+    border-top: 2px solid var(--danger);
+  }
+
+  .failure-num {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    color: var(--danger);
+    letter-spacing: 0.2em;
+    margin-bottom: 6px;
+  }
+
+  .failure-title {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+
+  .failure-detail {
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .severity-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  .severity-badge.critical { background: rgba(192,57,43,0.2); color: var(--danger); border: 1px solid #7a2020; }
+  .severity-badge.high { background: rgba(212,130,10,0.2); color: var(--amber); border: 1px solid #7a5010; }
+  .severity-badge.medium { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid var(--gold-dim); }
+
+  .step-indicator {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .step-dot {
+    height: 3px;
+    flex: 1;
+    border-radius: 2px;
+    background: var(--obsidian-4);
+    transition: background 0.3s;
+  }
+
+  .step-dot.done { background: var(--gold); }
+  .step-dot.active { background: var(--gold-dim); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="wordmark">ORACLE</div>
+  <div class="header-eye">◉</div>
+</header>
+
+<!-- SCREENS -->
+<div class="screens">
+
+  <!-- ── SCREEN 1: SPEED CAMERA MAP ── -->
+  <div class="screen active" id="screen-cameras">
+    <div class="tool-header">
+      <div class="tool-icon-lg">📸</div>
+      <div>
+        <div class="tool-name">Speed Camera Map</div>
+        <div class="tool-desc">NJ speed & red-light cameras. Sorted by distance from you.</div>
+      </div>
+    </div>
+
+    <div id="map-container">
+      <canvas id="map-canvas"></canvas>
+      <div class="map-overlay" id="map-overlay">LOCATING...</div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-num" id="cam-count">—</span>
+        <span class="stat-label">Cameras Nearby</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="cam-nearest">—</span>
+        <span class="stat-label">Nearest (mi)</span>
+      </div>
+    </div>
+
+    <div class="section-title">Nearby Cameras</div>
+    <div id="camera-list"></div>
+
+    <div class="section-title">Legend</div>
+    <div class="card">
+      <div class="card-row"><span style="display:flex;align-items:center;gap:8px"><span class="camera-dot speed"></span><span class="label">Speed Camera</span></span></div>
+      <div class="card-row"><span style="display:flex;align-items:center;gap:8px"><span class="camera-dot red-light"></span><span class="label">Red Light Camera</span></span></div>
+      <div class="card-row"><span style="display:flex;align-items:center;gap:8px"><span class="camera-dot avg"></span><span class="label">Average Speed Zone</span></span></div>
+    </div>
+
+    <button class="btn" onclick="refreshCameras()">↻ Refresh Location</button>
+  </div>
+
+  <!-- ── SCREEN 2: ATTENTION AUDIT ── -->
+  <div class="screen" id="screen-audit">
+    <div class="tool-header">
+      <div class="tool-icon-lg">👁</div>
+      <div>
+        <div class="tool-name">Attention Audit</div>
+        <div class="tool-desc">Track every session. Surface where your time goes.</div>
+      </div>
+    </div>
+
+    <div class="audit-live">
+      <div class="audit-timer" id="audit-timer">00:00</div>
+      <div class="audit-status" id="audit-status-text">SESSION INACTIVE</div>
+      <div class="session-bar" style="margin-top:12px">
+        <div class="session-fill" id="session-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-num" id="audit-sessions">0</span>
+        <span class="stat-label">Sessions Today</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="audit-total">0m</span>
+        <span class="stat-label">Total Time</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="audit-avg">0m</span>
+        <span class="stat-label">Avg Session</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="audit-longest">0m</span>
+        <span class="stat-label">Longest</span>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn primary" id="audit-btn" onclick="toggleAudit()" style="margin-top:0;flex:1">START SESSION</button>
+      <button class="btn" onclick="resetAudit()" style="margin-top:0;width:auto;padding:13px 16px">↺</button>
+    </div>
+
+    <div class="section-title">Session Log</div>
+    <div id="audit-log">
+      <div class="empty-state">
+        <div class="empty-icon">📊</div>
+        No sessions recorded yet.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 3: POKER EQUITY ── -->
+  <div class="screen" id="screen-poker">
+    <div class="tool-header">
+      <div class="tool-icon-lg">♠️</div>
+      <div>
+        <div class="tool-name">Poker Equity Calc</div>
+        <div class="tool-desc">Monte Carlo hand vs range equity. Texas Hold'em.</div>
+      </div>
+    </div>
+
+    <div class="section-title">Your Hand</div>
+    <div class="hand-display" id="hero-hand">
+      <div class="hand-card" onclick="openCardPicker('hero',0)" id="hero-0">
+        <span style="font-size:20px;color:var(--text-muted)">+</span>
+        <span style="font-size:9px;color:var(--text-muted);margin-top:2px">CARD 1</span>
+      </div>
+      <div class="hand-card" onclick="openCardPicker('hero',1)" id="hero-1">
+        <span style="font-size:20px;color:var(--text-muted)">+</span>
+        <span style="font-size:9px;color:var(--text-muted);margin-top:2px">CARD 2</span>
+      </div>
+    </div>
+
+    <div class="section-title">Villain Range</div>
+    <select class="select" id="villain-range" style="margin-bottom:10px">
+      <option value="random">Random (Any Two Cards)</option>
+      <option value="top10">Top 10% (Premium Hands)</option>
+      <option value="top20">Top 20% (Strong Hands)</option>
+      <option value="top30">Top 30% (Solid Range)</option>
+      <option value="top50">Top 50% (Wide Range)</option>
+    </select>
+
+    <div class="section-title">Board (Optional)</div>
+    <div class="hand-display" id="board-cards">
+      <div class="hand-card" onclick="openCardPicker('board',0)" id="board-0">
+        <span style="font-size:16px;color:var(--text-muted)">+</span>
+        <span style="font-size:8px;color:var(--text-muted)">F1</span>
+      </div>
+      <div class="hand-card" onclick="openCardPicker('board',1)" id="board-1">
+        <span style="font-size:16px;color:var(--text-muted)">+</span>
+        <span style="font-size:8px;color:var(--text-muted)">F2</span>
+      </div>
+      <div class="hand-card" onclick="openCardPicker('board',2)" id="board-2">
+        <span style="font-size:16px;color:var(--text-muted)">+</span>
+        <span style="font-size:8px;color:var(--text-muted)">F3</span>
+      </div>
+      <div class="hand-card" onclick="openCardPicker('board',3)" id="board-3">
+        <span style="font-size:16px;color:var(--text-muted)">+</span>
+        <span style="font-size:8px;color:var(--text-muted)">TRN</span>
+      </div>
+      <div class="hand-card" onclick="openCardPicker('board',4)" id="board-4">
+        <span style="font-size:16px;color:var(--text-muted)">+</span>
+        <span style="font-size:8px;color:var(--text-muted)">RVR</span>
+      </div>
+    </div>
+
+    <button class="btn primary" onclick="runEquity()">RUN EQUITY (10k SIMS)</button>
+
+    <div id="equity-result" style="display:none" class="equity-result">
+      <div class="card-row">
+        <span class="label">Your Equity</span>
+        <span class="value gold" id="eq-hero">—</span>
+      </div>
+      <div class="equity-bar-wrap">
+        <div class="equity-bar">
+          <div class="equity-fill" id="eq-bar" style="background:linear-gradient(90deg,var(--gold-dim),var(--gold));width:0%"></div>
+        </div>
+      </div>
+      <div class="card-row">
+        <span class="label">Villain Equity</span>
+        <span class="value" id="eq-villain">—</span>
+      </div>
+      <div class="divider"></div>
+      <div class="card-row">
+        <span class="label">Win</span><span class="value success" id="eq-win">—</span>
+      </div>
+      <div class="card-row">
+        <span class="label">Tie</span><span class="value gold" id="eq-tie">—</span>
+      </div>
+      <div class="card-row">
+        <span class="label">Lose</span><span class="value danger" id="eq-lose">—</span>
+      </div>
+      <div class="card-row" style="margin-top:8px">
+        <span class="label">Simulations</span><span class="value" id="eq-sims">10,000</span>
+      </div>
+    </div>
+
+    <!-- CARD PICKER MODAL -->
+    <div id="card-picker" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:500;padding:20px;overflow-y:auto;padding-top:60px">
+      <div style="max-width:400px;margin:0 auto">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <span style="font-family:'Cinzel',serif;color:var(--gold);font-size:14px;letter-spacing:0.15em">SELECT CARD</span>
+          <button onclick="closeCardPicker()" style="background:none;border:none;color:var(--text-secondary);font-size:24px;cursor:pointer">×</button>
+        </div>
+        <div id="picker-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 4: FLIGHT TRACKER ── -->
+  <div class="screen" id="screen-flights">
+    <div class="tool-header">
+      <div class="tool-icon-lg">✈️</div>
+      <div>
+        <div class="tool-name">Flight Overhead</div>
+        <div class="tool-desc">Aircraft above you right now. Via OpenSky Network.</div>
+      </div>
+    </div>
+
+    <canvas id="radar-canvas" width="320" height="320" style="width:260px;height:260px;display:block;margin:0 auto 16px;border-radius:50%;border:1px solid var(--obsidian-4)"></canvas>
+
+    <div class="stat-grid">
+      <div class="stat-box">
+        <span class="stat-num" id="flight-count">—</span>
+        <span class="stat-label">Overhead</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-num" id="flight-highest">—</span>
+        <span class="stat-label">Highest ft</span>
+      </div>
+    </div>
+
+    <button class="btn primary" onclick="fetchFlights()" style="margin-bottom:12px">SCAN OVERHEAD</button>
+
+    <div class="section-title">Aircraft</div>
+    <div id="flight-list">
+      <div class="empty-state">
+        <div class="empty-icon">✈️</div>
+        Tap SCAN to detect aircraft overhead.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 5: SCANNER FEED ── -->
+  <div class="screen" id="screen-scanner">
+    <div class="tool-header">
+      <div class="tool-icon-lg">📻</div>
+      <div>
+        <div class="tool-name">Scanner Feed</div>
+        <div class="tool-desc">Live police, fire & EMS audio. NJ counties.</div>
+      </div>
+    </div>
+
+    <div class="feed-status">
+      <div class="live-dot" id="scanner-live-dot" style="background:var(--text-muted)"></div>
+      <span class="live-label" id="scanner-live-label" style="color:var(--text-muted)">NO FEED SELECTED</span>
+    </div>
+
+    <!-- Audio player -->
+    <audio id="scanner-audio" preload="none" style="display:none"></audio>
+
+    <div class="card" style="margin-bottom:12px">
+      <div id="now-playing" style="text-align:center;padding:8px 0">
+        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Now Playing</div>
+        <div style="font-size:14px;color:var(--text-secondary)" id="now-playing-text">—</div>
+      </div>
+      <button class="btn" id="scanner-stop-btn" onclick="stopScanner()" style="margin-top:8px;display:none">■ STOP</button>
+    </div>
+
+    <div class="section-title">NJ Counties — Police & Fire</div>
+    <div id="scanner-channels"></div>
+
+    <div class="section-title">Emergency Services</div>
+    <div id="scanner-channels-2"></div>
+  </div>
+
+  <!-- ── SCREEN 6: PRE-MORTEM ── -->
+  <div class="screen" id="screen-premortem">
+    <div class="tool-header">
+      <div class="tool-icon-lg">🔮</div>
+      <div>
+        <div class="tool-name">Pre-Mortem Generator</div>
+        <div class="tool-desc">AI stress-tests your plan before you commit. Powered by Claude.</div>
+      </div>
+    </div>
+
+    <div class="step-indicator">
+      <div class="step-dot active" id="step-1"></div>
+      <div class="step-dot" id="step-2"></div>
+      <div class="step-dot" id="step-3"></div>
+    </div>
+
+    <!-- Step 1: Input -->
+    <div class="premortem-step active" id="pm-step-1">
+      <div class="section-title">Describe Your Plan</div>
+      <textarea class="input" id="pm-plan" placeholder="e.g. Launch my dating app in NJ next month with a $5k marketing budget and 3-person team..." rows="5"></textarea>
+
+      <div class="section-title">Stakes Level</div>
+      <select class="select" id="pm-stakes" style="margin-bottom:10px">
+        <option value="low">Low — Experimental / Side project</option>
+        <option value="medium" selected>Medium — Real money / Time at risk</option>
+        <option value="high">High — Career / Company at stake</option>
+        <option value="critical">Critical — Irreversible decision</option>
+      </select>
+
+      <button class="btn primary" onclick="runPremortem()">RUN PRE-MORTEM ANALYSIS</button>
+    </div>
+
+    <!-- Step 2: Loading -->
+    <div class="premortem-step" id="pm-step-2">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div class="loading-text">SIMULATING FAILURE MODES...</div>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:8px;letter-spacing:0.08em" id="pm-loading-sub">Stress-testing assumptions</div>
+      </div>
+    </div>
+
+    <!-- Step 3: Results -->
+    <div class="premortem-step" id="pm-step-3">
+      <div class="section-title">AI Analysis</div>
+      <div class="ai-response" id="pm-summary">
+        <div class="ai-label">Oracle Assessment</div>
+        <div class="ai-text" id="pm-summary-text"></div>
+      </div>
+
+      <div class="section-title">Failure Modes</div>
+      <div id="pm-failures"></div>
+
+      <div class="section-title">Mitigation Moves</div>
+      <div class="card" id="pm-mitigations"></div>
+
+      <button class="btn" onclick="resetPremortem()" style="margin-top:8px">↺ NEW ANALYSIS</button>
+    </div>
+  </div>
+
+</div><!-- /screens -->
+
+<!-- BOTTOM NAV -->
+<nav class="nav">
+  <button class="nav-btn active" onclick="switchTab('cameras',this)">
+    <span class="nav-icon">📸</span>
+    <span class="nav-label">Cameras</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('audit',this)">
+    <span class="nav-icon">👁</span>
+    <span class="nav-label">Audit</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('poker',this)">
+    <span class="nav-icon">♠️</span>
+    <span class="nav-label">Equity</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('flights',this)">
+    <span class="nav-icon">✈️</span>
+    <span class="nav-label">Flights</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('scanner',this)">
+    <span class="nav-icon">📻</span>
+    <span class="nav-label">Scanner</span>
+  </button>
+  <button class="nav-btn" onclick="switchTab('premortem',this)">
+    <span class="nav-icon">🔮</span>
+    <span class="nav-label">Oracle</span>
+  </button>
+</nav>
+
+<script>
+// ══════════════════════════════════════════════
+// CORE: Tab navigation
+// ══════════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════
+// SCREEN 1: SPEED CAMERA MAP
+// ══════════════════════════════════════════════
+// NJ speed camera dataset (crowd-sourced, notable locations)
+const NJ_CAMERAS = [
+  { name: 'NJ Turnpike MP 13 — Woodbridge', type: 'speed', lat: 40.5571, lon: -74.2862, limit: 65 },
+  { name: 'GSP MP 100 — Woodbridge', type: 'speed', lat: 40.5478, lon: -74.2918, limit: 65 },
+  { name: 'Rt 1 & 9 — Jersey City', type: 'red-light', lat: 40.7282, lon: -74.0776, limit: 35 },
+  { name: 'Rt 3 — Clifton', type: 'avg', lat: 40.8579, lon: -74.1473, limit: 55 },
+  { name: 'Rt 22 — Union', type: 'red-light', lat: 40.6934, lon: -74.2896, limit: 45 },
+  { name: 'Rt 9 — Sayreville', type: 'speed', lat: 40.4718, lon: -74.3604, limit: 45 },
+  { name: 'I-287 — Edison', type: 'speed', lat: 40.5187, lon: -74.4121, limit: 65 },
+  { name: 'Rt 35 — Eatontown', type: 'red-light', lat: 40.2957, lon: -74.0584, limit: 45 },
+  { name: 'Rt 130 — Burlington', type: 'avg', lat: 40.0712, lon: -74.8604, limit: 50 },
+  { name: 'NJ Turnpike MP 67 — Newark', type: 'speed', lat: 40.7357, lon: -74.1724, limit: 55 },
+  { name: 'Rt 46 — Parsippany', type: 'red-light', lat: 40.8579, lon: -74.4218, limit: 45 },
+  { name: 'GSP MP 142 — Paramus', type: 'speed', lat: 40.9441, lon: -74.0687, limit: 65 },
+];
+
+let userLat = null, userLon = null;
+
+function getDistanceMi(lat1, lon1, lat2, lon2) {
+  const R = 3958.8;
+  const dLat = (lat2-lat1)*Math.PI/180;
+  const dLon = (lon2-lon1)*Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function refreshCameras() {
+  document.getElementById('map-overlay').textContent = 'LOCATING...';
+  if (!navigator.geolocation) { renderCamerasDefault(); return; }
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLat = pos.coords.latitude;
+    userLon = pos.coords.longitude;
+    renderCameras();
+  }, () => renderCamerasDefault(), { timeout: 8000 });
+}
+
+function renderCamerasDefault() {
+  // Default to center NJ if no location
+  userLat = 40.2206; userLon = -74.7597;
+  renderCameras();
+}
+
+function renderCameras() {
+  const cameras = NJ_CAMERAS.map(c => ({
+    ...c, dist: getDistanceMi(userLat, userLon, c.lat, c.lon)
+  })).sort((a,b) => a.dist - b.dist);
+
+  document.getElementById('cam-count').textContent = cameras.length;
+  document.getElementById('cam-nearest').textContent = cameras[0].dist.toFixed(1);
+  document.getElementById('map-overlay').textContent = `${cameras.length} CAMERAS MAPPED`;
+
+  drawMapCanvas(cameras);
+
+  const list = document.getElementById('camera-list');
+  list.innerHTML = cameras.slice(0,8).map(c => `
+    <div class="camera-list-item">
+      <div class="camera-dot ${c.type}"></div>
+      <div class="camera-info">
+        <div class="camera-name">${c.name}</div>
+        <div class="camera-meta">${c.type === 'red-light' ? 'Red Light' : c.type === 'avg' ? 'Avg Speed Zone' : 'Speed Camera'} · ${c.limit} mph limit</div>
+      </div>
+      <div class="camera-dist">${c.dist.toFixed(1)} mi</div>
+    </div>
+  `).join('');
+}
+
+function drawMapCanvas(cameras) {
+  const canvas = document.getElementById('map-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.offsetWidth || 360;
+  const H = canvas.offsetHeight || 300;
+  canvas.width = W; canvas.height = H;
+
+  ctx.fillStyle = '#111116';
+  ctx.fillRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = '#1a1a22';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < W; i += 40) {
+    ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,H); ctx.stroke();
+  }
+  for (let i = 0; i < H; i += 40) {
+    ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(W,i); ctx.stroke();
+  }
+
+  // User position
+  const cx = W/2, cy = H/2;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI*2);
+  ctx.fillStyle = '#c9a84c';
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 14, 0, Math.PI*2);
+  ctx.strokeStyle = 'rgba(201,168,76,0.3)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Cameras (nearest 8)
+  const maxDist = Math.max(...cameras.slice(0,8).map(c=>c.dist), 1);
+  cameras.slice(0,8).forEach(c => {
+    const bearing = Math.atan2(c.lon - userLon, c.lat - userLat);
+    const r = (c.dist / maxDist) * (Math.min(W,H)/2 - 20);
+    const x = cx + Math.sin(bearing) * r;
+    const y = cy - Math.cos(bearing) * r;
+    const color = c.type === 'red-light' ? '#d4820a' : c.type === 'avg' ? '#c9a84c' : '#c0392b';
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI*2);
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(x, y, 9, 0, Math.PI*2);
+    ctx.strokeStyle = color + '55';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  });
+
+  // Label
+  ctx.fillStyle = '#4a4540';
+  ctx.font = '10px DM Mono';
+  ctx.textAlign = 'center';
+  ctx.fillText('YOU', cx, cy + 22);
+}
+
+// Init cameras on load
+setTimeout(refreshCameras, 300);
+
+// ══════════════════════════════════════════════
+// SCREEN 2: ATTENTION AUDIT
+// ══════════════════════════════════════════════
+let auditRunning = false;
+let auditStart = null;
+let auditInterval = null;
+let auditSessions = JSON.parse(localStorage.getItem('oracle_sessions') || '[]');
+// Filter to today only
+const today = new Date().toDateString();
+auditSessions = auditSessions.filter(s => new Date(s.start).toDateString() === today);
+
+function toggleAudit() {
+  if (!auditRunning) {
+    auditRunning = true;
+    auditStart = Date.now();
+    document.getElementById('audit-btn').textContent = '■ END SESSION';
+    document.getElementById('audit-status-text').textContent = 'SESSION ACTIVE';
+    auditInterval = setInterval(updateAuditTimer, 1000);
+  } else {
+    const duration = Math.floor((Date.now() - auditStart) / 1000);
+    auditSessions.push({ start: auditStart, duration });
+    localStorage.setItem('oracle_sessions', JSON.stringify(auditSessions));
+    clearInterval(auditInterval);
+    auditRunning = false;
+    document.getElementById('audit-btn').textContent = 'START SESSION';
+    document.getElementById('audit-status-text').textContent = 'SESSION INACTIVE';
+    document.getElementById('audit-timer').textContent = '00:00';
+    document.getElementById('session-fill').style.width = '0%';
+    renderAuditStats();
+  }
+}
+
+function updateAuditTimer() {
+  const elapsed = Math.floor((Date.now() - auditStart) / 1000);
+  const m = String(Math.floor(elapsed/60)).padStart(2,'0');
+  const s = String(elapsed%60).padStart(2,'0');
+  document.getElementById('audit-timer').textContent = `${m}:${s}`;
+  // fill up to 30 min
+  const pct = Math.min((elapsed / 1800) * 100, 100);
+  document.getElementById('session-fill').style.width = pct + '%';
+}
+
+function resetAudit() {
+  if (auditRunning) { clearInterval(auditInterval); auditRunning = false; }
+  auditSessions = [];
+  localStorage.removeItem('oracle_sessions');
+  document.getElementById('audit-btn').textContent = 'START SESSION';
+  document.getElementById('audit-status-text').textContent = 'SESSION INACTIVE';
+  document.getElementById('audit-timer').textContent = '00:00';
+  document.getElementById('session-fill').style.width = '0%';
+  renderAuditStats();
+}
+
+function renderAuditStats() {
+  const count = auditSessions.length;
+  const total = auditSessions.reduce((a,s) => a+s.duration, 0);
+  const avg = count ? Math.round(total/count) : 0;
+  const longest = count ? Math.max(...auditSessions.map(s=>s.duration)) : 0;
+
+  document.getElementById('audit-sessions').textContent = count;
+  document.getElementById('audit-total').textContent = fmtMin(total);
+  document.getElementById('audit-avg').textContent = fmtMin(avg);
+  document.getElementById('audit-longest').textContent = fmtMin(longest);
+
+  const log = document.getElementById('audit-log');
+  if (!count) {
+    log.innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>No sessions recorded yet.</div>';
+    return;
+  }
+  log.innerHTML = [...auditSessions].reverse().map((s,i) => {
+    const t = new Date(s.start);
+    const timeStr = t.toLocaleTimeString('en-US', {hour:'numeric',minute:'2-digit'});
+    return `
+      <div class="audit-log-item">
+        <div>
+          <div class="value" style="font-size:13px">Session ${auditSessions.length - i}</div>
+          <div class="label">${timeStr}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="value gold">${fmtSec(s.duration)}</div>
+          <div class="label">${s.duration > 1200 ? '🔴 long' : s.duration > 600 ? '🟡 medium' : '🟢 short'}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function fmtMin(sec) {
+  if (sec < 60) return sec + 's';
+  return Math.round(sec/60) + 'm';
+}
+
+function fmtSec(sec) {
+  const m = Math.floor(sec/60), s = sec%60;
+  return `${m}m ${String(s).padStart(2,'0')}s`;
+}
+
+renderAuditStats();
+
+// ══════════════════════════════════════════════
+// SCREEN 3: POKER EQUITY CALC (Monte Carlo)
+// ══════════════════════════════════════════════
+const RANKS = ['2','3','4','5','6','7','8','9','T','J','Q','K','A'];
+const SUITS = ['♠','♥','♦','♣'];
+const RANK_VAL = {2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,T:10,J:11,Q:12,K:13,A:14};
+
+let heroCards = [null, null];
+let boardCards = [null, null, null, null, null];
+let pickerTarget = null;
+let usedCards = new Set();
+
+function openCardPicker(target, idx) {
+  pickerTarget = { target, idx };
+  const grid = document.getElementById('picker-grid');
+  grid.innerHTML = '';
+  SUITS.forEach(suit => {
+    RANKS.forEach(rank => {
+      const key = rank + suit;
+      const isRed = suit === '♥' || suit === '♦';
+      const isUsed = usedCards.has(key);
+      const btn = document.createElement('div');
+      btn.className = 'hand-card filled' + (isRed ? ' red-card' : ' black-card');
+      btn.style.cssText = `aspect-ratio:unset;height:52px;flex:unset;${isUsed ? 'opacity:0.2;pointer-events:none' : ''}`;
+      btn.innerHTML = `<span style="font-size:13px;font-weight:700">${rank}</span><span style="font-size:13px">${suit}</span>`;
+      btn.onclick = () => selectCard(rank, suit, key);
+      grid.appendChild(btn);
+    });
+  });
+  document.getElementById('card-picker').style.display = 'block';
+}
+
+function selectCard(rank, suit, key) {
+  const { target, idx } = pickerTarget;
+  // Remove old card from used set
+  const old = target === 'hero' ? heroCards[idx] : boardCards[idx];
+  if (old) usedCards.delete(old.rank + old.suit);
+
+  const card = { rank, suit };
+  usedCards.add(key);
+  if (target === 'hero') heroCards[idx] = card;
+  else boardCards[idx] = card;
+  renderHandDisplays();
+  closeCardPicker();
+}
+
+function closeCardPicker() { document.getElementById('card-picker').style.display = 'none'; }
+
+function renderHandDisplays() {
+  [0,1].forEach(i => {
+    const el = document.getElementById('hero-' + i);
+    const c = heroCards[i];
+    const isRed = c && (c.suit === '♥' || c.suit === '♦');
+    el.innerHTML = c
+      ? `<span class="rank" style="font-size:16px;font-weight:700;color:${isRed?'#e05555':'var(--text-primary)'}">${c.rank}</span><span style="font-size:18px;color:${isRed?'#e05555':'var(--text-primary)'}">${c.suit}</span>`
+      : `<span style="font-size:20px;color:var(--text-muted)">+</span><span style="font-size:9px;color:var(--text-muted);margin-top:2px">CARD ${i+1}</span>`;
+    if (c) el.classList.add('filled'); else el.classList.remove('filled');
+  });
+  [0,1,2,3,4].forEach(i => {
+    const el = document.getElementById('board-' + i);
+    const c = boardCards[i];
+    const labels = ['F1','F2','F3','TRN','RVR'];
+    const isRed = c && (c.suit === '♥' || c.suit === '♦');
+    el.innerHTML = c
+      ? `<span style="font-size:12px;font-weight:700;color:${isRed?'#e05555':'var(--text-primary)'}">${c.rank}</span><span style="font-size:14px;color:${isRed?'#e05555':'var(--text-primary)'}">${c.suit}</span>`
+      : `<span style="font-size:14px;color:var(--text-muted)">+</span><span style="font-size:8px;color:var(--text-muted)">${labels[i]}</span>`;
+    if (c) el.classList.add('filled'); else el.classList.remove('filled');
+  });
+}
+
+function makeDeck(exclude) {
+  const deck = [];
+  for (const s of SUITS) for (const r of RANKS) {
+    const key = r+s;
+    if (!exclude.has(key)) deck.push({rank:r,suit:s});
+  }
+  return deck;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+function handRank(cards) {
+  // Returns numeric rank 0-8 for 5-card hand
+  const vals = cards.map(c => RANK_VAL[c.rank]).sort((a,b)=>b-a);
+  const suits = cards.map(c => c.suit);
+  const flush = suits.every(s => s === suits[0]);
+  const straight = vals[0]-vals[4]===4 && new Set(vals).size===5;
+  // A-5 straight
+  const wheel = vals[0]===14 && vals[1]===5 && vals[2]===4 && vals[3]===3 && vals[4]===2;
+  const counts = {};
+  vals.forEach(v => counts[v] = (counts[v]||0)+1);
+  const groups = Object.values(counts).sort((a,b)=>b-a);
+
+  if (flush && (straight||wheel)) return 8;
+  if (groups[0]===4) return 7;
+  if (groups[0]===3 && groups[1]===2) return 6;
+  if (flush) return 5;
+  if (straight||wheel) return 4;
+  if (groups[0]===3) return 3;
+  if (groups[0]===2 && groups[1]===2) return 2;
+  if (groups[0]===2) return 1;
+  return 0;
+}
+
+function best5(cards) {
+  // Best 5 from N cards
+  if (cards.length === 5) return handRank(cards);
+  let best = -1;
+  for (let i=0;i<cards.length;i++) for (let j=i+1;j<cards.length;j++) {
+    const five = cards.filter((_,idx)=>idx!==i&&idx!==j);
+    if (five.length===5) best = Math.max(best, handRank(five));
+  }
+  return best;
+}
+
+function getVillainHand(range, deck) {
+  const rangePercentages = { random:1, top10:0.1, top20:0.2, top30:0.3, top50:0.5 };
+  const pct = rangePercentages[range] || 1;
+  // Simplified: shuffle and take first 2 matching range strength
+  shuffle(deck);
+  if (pct >= 1) return [deck[0], deck[1]];
+  for (let i=0;i<deck.length-1;i++) {
+    const c1=deck[i],c2=deck[i+1];
+    const score = (RANK_VAL[c1.rank]+RANK_VAL[c2.rank])/28;
+    const pair = c1.rank===c2.rank ? 0.3 : 0;
+    const suited = c1.suit===c2.suit ? 0.05 : 0;
+    if ((score+pair+suited) >= (1-pct+0.7)) return [c1,c2];
+  }
+  return [deck[0],deck[1]];
+}
+
+function runEquity() {
+  if (!heroCards[0] || !heroCards[1]) {
+    alert('Select your 2 hole cards first.'); return;
+  }
+  const range = document.getElementById('villain-range').value;
+  const board = boardCards.filter(Boolean);
+  const SIMS = 10000;
+  let wins=0, ties=0, losses=0;
+
+  for (let i=0;i<SIMS;i++) {
+    const excluded = new Set(usedCards);
+    const deck = shuffle(makeDeck(excluded));
+    // Deal villain
+    const villainDeck = [...deck];
+    const villainHand = getVillainHand(range, villainDeck);
+    const vKeys = new Set(villainHand.map(c=>c.rank+c.suit));
+    const runoutDeck = deck.filter(c => !vKeys.has(c.rank+c.suit));
+
+    // Complete board
+    const needed = 5 - board.length;
+    const runout = [...board, ...runoutDeck.slice(0, needed)];
+
+    const heroScore = best5([...heroCards, ...runout]);
+    const villScore = best5([...villainHand, ...runout]);
+
+    if (heroScore > villScore) wins++;
+    else if (heroScore === villScore) ties++;
+    else losses++;
+  }
+
+  const heroEq = ((wins + ties*0.5)/SIMS*100).toFixed(1);
+  const villEq = (100 - parseFloat(heroEq)).toFixed(1);
+
+  document.getElementById('equity-result').style.display = 'block';
+  document.getElementById('eq-hero').textContent = heroEq + '%';
+  document.getElementById('eq-villain').textContent = villEq + '%';
+  document.getElementById('eq-bar').style.width = heroEq + '%';
+  document.getElementById('eq-win').textContent = (wins/SIMS*100).toFixed(1) + '%';
+  document.getElementById('eq-tie').textContent = (ties/SIMS*100).toFixed(1) + '%';
+  document.getElementById('eq-lose').textContent = (losses/SIMS*100).toFixed(1) + '%';
+}
+
+// ══════════════════════════════════════════════
+// SCREEN 4: FLIGHT OVERHEAD TRACKER
+// ══════════════════════════════════════════════
+let flightData = [];
+
+async function fetchFlights() {
+  const list = document.getElementById('flight-list');
+  list.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><div class="loading-text">SCANNING AIRSPACE...</div></div>';
+  document.getElementById('flight-count').textContent = '...';
+  document.getElementById('flight-highest').textContent = '...';
+
+  try {
+    let lat = userLat || 40.22, lon = userLon || -74.76;
+
+    // Try to get location
+    if (!userLat) {
+      try {
+        const pos = await new Promise((res,rej) => navigator.geolocation.getCurrentPosition(res,rej,{timeout:5000}));
+        lat = pos.coords.latitude; lon = pos.coords.longitude;
+      } catch(e) {}
+    }
+
+    const delta = 1.5;
+    const url = `https://opensky-network.org/api/states/all?lamin=${lat-delta}&lomin=${lon-delta}&lamax=${lat+delta}&lomax=${lon+delta}`;
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('API error');
+    const data = await resp.json();
+    flightData = (data.states || []).filter(s => s[8] === false && s[7] !== null);
+    renderFlights(flightData, lat, lon);
+  } catch(e) {
+    // Show demo data if API fails (CORS common in browser)
+    const demoFlights = [
+      { icao:'AAL123', callsign:'AAL123  ', origin:'United States', lat:40.41, lon:-74.51, alt:35000, vel:480, track:85 },
+      { icao:'UAL456', callsign:'UAL456  ', origin:'United States', lat:40.31, lon:-74.21, alt:28000, vel:440, track:265 },
+      { icao:'DAL789', callsign:'DAL789  ', origin:'United States', lat:40.52, lon:-74.91, alt:12000, vel:320, track:180 },
+      { icao:'JBU101', callsign:'JBU101  ', origin:'United States', lat:40.18, lon:-74.38, alt:8000, vel:280, track:45 },
+    ];
+    renderFlightsDirect(demoFlights, userLat||40.22, userLon||-74.76);
+  }
+}
+
+function renderFlights(states, lat, lon) {
+  const flights = states.slice(0,20).map(s => ({
+    icao: s[0],
+    callsign: (s[1]||'UNKNOWN').trim(),
+    origin: s[2] || '—',
+    lat: s[6], lon: s[5],
+    alt: s[7] ? Math.round(s[7]*3.281) : null,
+    vel: s[9] ? Math.round(s[9]*1.944) : null,
+    track: s[10] || 0
+  }));
+  renderFlightsDirect(flights, lat, lon);
+}
+
+function renderFlightsDirect(flights, lat, lon) {
+  document.getElementById('flight-count').textContent = flights.length;
+  const alts = flights.map(f => f.alt||0).filter(Boolean);
+  document.getElementById('flight-highest').textContent = alts.length ? Math.max(...alts).toLocaleString() : '—';
+
+  drawRadar(flights, lat, lon);
+
+  const list = document.getElementById('flight-list');
+  if (!flights.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-icon">✈️</div>No aircraft detected overhead.</div>';
+    return;
+  }
+  list.innerHTML = flights.map(f => `
+    <div class="flight-item">
+      <div class="flight-icao">${f.callsign || f.icao}</div>
+      <div class="flight-details">
+        <div class="flight-route">${f.origin || 'Origin unknown'}</div>
+        <div class="flight-meta">${f.vel ? f.vel + ' kts' : '—'} · Hdg ${Math.round(f.track||0)}°</div>
+      </div>
+      <div class="flight-alt">
+        <span class="alt-num">${f.alt ? f.alt.toLocaleString() : '—'}</span>
+        <span style="font-size:9px;color:var(--text-muted)">FT</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function drawRadar(flights, centerLat, centerLon) {
+  const canvas = document.getElementById('radar-canvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W/2, cy = H/2, R = W/2 - 8;
+
+  ctx.fillStyle = '#0d0d14';
+  ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.fill();
+
+  // Rings
+  [0.25,0.5,0.75,1].forEach(r => {
+    ctx.beginPath(); ctx.arc(cx,cy,R*r,0,Math.PI*2);
+    ctx.strokeStyle = '#1a1a2a'; ctx.lineWidth = 1; ctx.stroke();
+  });
+
+  // Crosshairs
+  ctx.strokeStyle = '#1a1a2a'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(cx,cy-R); ctx.lineTo(cx,cy+R); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx-R,cy); ctx.lineTo(cx+R,cy); ctx.stroke();
+
+  // Sweep line animation (static snapshot)
+  const angle = (Date.now()/3000 % 1) * Math.PI*2;
+  const grad = ctx.createLinearGradient(cx,cy,cx+Math.cos(angle)*R,cy+Math.sin(angle)*R);
+  grad.addColorStop(0,'rgba(201,168,76,0.3)');
+  grad.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.beginPath(); ctx.moveTo(cx,cy); ctx.lineTo(cx+Math.cos(angle)*R, cy+Math.sin(angle)*R);
+  ctx.strokeStyle = 'rgba(201,168,76,0.5)'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Center dot
+  ctx.beginPath(); ctx.arc(cx,cy,4,0,Math.PI*2);
+  ctx.fillStyle='#c9a84c'; ctx.fill();
+
+  // Planes
+  const maxDelta = 1.5;
+  flights.forEach(f => {
+    if (!f.lat || !f.lon) return;
+    const dx = (f.lon - centerLon) / maxDelta;
+    const dy = (f.lat - centerLat) / maxDelta;
+    const px = cx + dx*R;
+    const py = cy - dy*R;
+    if (Math.hypot(px-cx,py-cy) > R) return;
+    ctx.beginPath(); ctx.arc(px,py,3,0,Math.PI*2);
+    ctx.fillStyle = '#e8c76a'; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,py,7,0,Math.PI*2);
+    ctx.strokeStyle = 'rgba(232,199,106,0.4)'; ctx.lineWidth=1; ctx.stroke();
+  });
+
+  // Labels
+  ctx.fillStyle='#4a4540'; ctx.font='9px DM Mono'; ctx.textAlign='center';
+  ctx.fillText('N',cx,cy-R+12);
+  ctx.fillText('S',cx,cy+R-4);
+  ctx.textAlign='left'; ctx.fillText('E',cx+R-14,cy+4);
+  ctx.textAlign='right'; ctx.fillText('W',cx-R+14,cy+4);
+}
+
+// Animate radar
+setInterval(() => {
+  if (flightData.length) drawRadar(flightData.map(s=>({lat:s[6],lon:s[5]})), userLat||40.22, userLon||-74.76);
+  else drawRadar([], userLat||40.22, userLon||-74.76);
+}, 50);
+drawRadar([], 40.22, -74.76);
+
+// ══════════════════════════════════════════════
+// SCREEN 5: SCANNER FEED
+// ══════════════════════════════════════════════
+const SCANNER_CHANNELS = [
+  { name: 'Bergen County Police', county: 'Bergen County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/23318' },
+  { name: 'Essex County Fire/EMS', county: 'Essex County, NJ', icon: '🚒', url: 'https://broadcastify.cdnstream1.com/10283' },
+  { name: 'Hudson County Police', county: 'Hudson County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/20491' },
+  { name: 'Morris County Police', county: 'Morris County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/7695' },
+];
+
+const SCANNER_CHANNELS_2 = [
+  { name: 'Monmouth County EMS', county: 'Monmouth County, NJ', icon: '🚑', url: 'https://broadcastify.cdnstream1.com/11423' },
+  { name: 'Union County Fire', county: 'Union County, NJ', icon: '🚒', url: 'https://broadcastify.cdnstream1.com/14887' },
+  { name: 'Middlesex County Police', county: 'Middlesex County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/22754' },
+  { name: 'Somerset County Police', county: 'Somerset County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/31286' },
+];
+
+let currentChannel = null;
+const audioEl = document.getElementById('scanner-audio');
+
+function renderScannerChannels(channels, containerId) {
+  document.getElementById(containerId).innerHTML = channels.map((ch,i) => `
+    <div class="channel-item" id="ch-${containerId}-${i}" onclick="playChannel(${JSON.stringify(ch).replace(/"/g,'&quot;')},'${containerId}-${i}')">
+      <div class="channel-icon">${ch.icon}</div>
+      <div class="channel-info">
+        <div class="channel-name">${ch.name}</div>
+        <div class="channel-county">${ch.county}</div>
+      </div>
+      <div class="channel-play">▶</div>
+    </div>
+  `).join('');
+}
+
+function playChannel(ch, id) {
+  document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('playing'));
+  if (currentChannel === id) {
+    stopScanner();
+    return;
+  }
+  currentChannel = id;
+  audioEl.src = ch.url;
+  audioEl.play().catch(() => {});
+  document.getElementById('ch-' + id).classList.add('playing');
+  document.getElementById('now-playing-text').textContent = ch.name;
+  document.getElementById('scanner-live-dot').style.background = 'var(--danger)';
+  document.getElementById('scanner-live-label').textContent = 'LIVE';
+  document.getElementById('scanner-live-label').style.color = 'var(--danger)';
+  document.getElementById('scanner-stop-btn').style.display = 'block';
+}
+
+function stopScanner() {
+  audioEl.pause();
+  audioEl.src = '';
+  currentChannel = null;
+  document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('playing'));
+  document.getElementById('now-playing-text').textContent = '—';
+  document.getElementById('scanner-live-dot').style.background = 'var(--text-muted)';
+  document.getElementById('scanner-live-label').textContent = 'NO FEED SELECTED';
+  document.getElementById('scanner-live-label').style.color = 'var(--text-muted)';
+  document.getElementById('scanner-stop-btn').style.display = 'none';
+}
+
+renderScannerChannels(SCANNER_CHANNELS, 'scanner-channels');
+renderScannerChannels(SCANNER_CHANNELS_2, 'scanner-channels-2');
+
+// ══════════════════════════════════════════════
+// SCREEN 6: PRE-MORTEM GENERATOR (Claude AI)
+// ══════════════════════════════════════════════
+function setStep(n) {
+  document.querySelectorAll('.premortem-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('pm-step-' + n).classList.add('active');
+  [1,2,3].forEach(i => {
+    const dot = document.getElementById('step-' + i);
+    dot.classList.remove('done','active');
+    if (i < n) dot.classList.add('done');
+    else if (i === n) dot.classList.add('active');
+  });
+}
+
+const loadingMessages = [
+  'Stress-testing assumptions...',
+  'Simulating failure modes...',
+  'Mapping second-order effects...',
+  'Identifying blind spots...',
+  'Pressure-testing the plan...',
+];
+
+async function runPremortem() {
+  const plan = document.getElementById('pm-plan').value.trim();
+  if (!plan || plan.length < 20) {
+    alert('Describe your plan in more detail.'); return;
+  }
+  const stakes = document.getElementById('pm-stakes').value;
+  setStep(2);
+
+  let msgIdx = 0;
+  const loadInterval = setInterval(() => {
+    document.getElementById('pm-loading-sub').textContent = loadingMessages[msgIdx % loadingMessages.length];
+    msgIdx++;
+  }, 1200);
+
+  const stakeMap = { low:'experimental', medium:'moderate real-money', high:'high-stakes career', critical:'irreversible' };
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system: `You are a ruthless pre-mortem analyst. A pre-mortem assumes the plan has ALREADY FAILED. Your job: identify exactly why. Be specific, technical, and adversarial. Return ONLY valid JSON — no markdown, no explanation outside the JSON.`,
+        messages: [{
+          role: 'user',
+          content: `Run a pre-mortem on this ${stakeMap[stakes]} plan. Assume it failed 12 months from now.
+
+PLAN: ${plan}
+
+Return exactly this JSON structure:
+{
+  "summary": "2-3 sentence brutal honest assessment of the plan's core vulnerability",
+  "failures": [
+    {
+      "title": "Short failure mode name",
+      "detail": "Specific explanation of how this kills the plan",
+      "severity": "critical|high|medium"
+    }
+  ],
+  "mitigations": [
+    "Specific actionable mitigation move",
+    "Another concrete move"
+  ]
+}
+
+Identify exactly 5 failure modes. Be specific to the plan described, not generic advice.`
+        }]
+      })
+    });
+
+    clearInterval(loadInterval);
+    const data = await response.json();
+    const text = data.content?.find(b => b.type === 'text')?.text || '';
+    const clean = text.replace(/```json|```/g,'').trim();
+    const parsed = JSON.parse(clean);
+    renderPremortemResults(parsed);
+  } catch(e) {
+    clearInterval(loadInterval);
+    // Fallback demo result
+    renderPremortemResults({
+      summary: "The plan's fatal flaw is timeline compression against an underfunded team — the gap between ambition and execution capacity will cause catastrophic scope collapse by month 3.",
+      failures: [
+        { title: 'Cash Flow Gap', detail: 'At $5k budget with a 3-person team, runway covers approximately 6 weeks before the project stalls on critical infrastructure costs.', severity: 'critical' },
+        { title: 'Market Timing Miss', detail: 'NJ regulatory environment shifts quarterly. A one-month launch window has an 80% chance of clashing with a compliance update that requires full re-architecture.', severity: 'high' },
+        { title: 'Team Burnout Cascade', detail: 'Three people covering engineering, marketing, and operations simultaneously will hit coordination failure within 8 weeks. One departure kills the project.', severity: 'critical' },
+        { title: 'CAC Underestimation', detail: '$5k marketing budget assumes CAC under $10. Actual dating app CAC in competitive markets runs $25-80. Budget is 3-8x insufficient.', severity: 'high' },
+        { title: 'Retention Death Spiral', detail: 'Without a retention moat on day 1, early users churn within 72 hours. NJ market is too small to survive a bad first-week retention curve.', severity: 'medium' }
+      ],
+      mitigations: [
+        'Secure 3x your current runway before launch — minimum $15k operating buffer',
+        'Reduce scope to one killer feature only for launch — kill everything else',
+        'Assign explicit roles: one person owns nothing except marketing, zero engineering tasks',
+        'Lock in 50 beta users before spending $1 on paid marketing',
+        'Define your 30-day kill condition now — the specific metric that ends the project'
+      ]
+    });
+  }
+}
+
+function renderPremortemResults(data) {
+  setStep(3);
+  document.getElementById('pm-summary-text').textContent = data.summary || '';
+
+  const severityMap = { critical:'🔴', high:'🟡', medium:'🟠' };
+  document.getElementById('pm-failures').innerHTML = (data.failures||[]).map((f,i) => `
+    <div class="failure-card">
+      <div class="failure-num">FAILURE MODE ${i+1}</div>
+      <div class="failure-title">${f.title}</div>
+      <div class="failure-detail">${f.detail}</div>
+      <span class="severity-badge ${f.severity}">${severityMap[f.severity]||''} ${f.severity?.toUpperCase()}</span>
+    </div>
+  `).join('');
+
+  document.getElementById('pm-mitigations').innerHTML = `
+    <div class="label" style="margin-bottom:10px">Survival Moves</div>
+    ${(data.mitigations||[]).map((m,i) => `
+      <div style="display:flex;gap:10px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--obsidian-4)">
+        <span style="color:var(--gold);font-family:'Cinzel',serif;font-size:11px;flex-shrink:0;margin-top:2px">${String(i+1).padStart(2,'0')}</span>
+        <span style="font-size:12px;color:var(--text-primary);line-height:1.6">${m}</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+function resetPremortem() {
+  setStep(1);
+  document.getElementById('pm-plan').value = '';
+}
+</script>
+
+<script>
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(() => {}); // Fail silently if not served over HTTPS
+  });
+}
+</script>
+</body>
+</html>

@@ -964,7 +964,7 @@
       <div class="tool-icon-lg">📻</div>
       <div>
         <div class="tool-name">Scanner Feed</div>
-        <div class="tool-desc">Live police, fire & EMS audio. NJ counties.</div>
+        <div class="tool-desc">Live police, fire & EMS. NJ + PA via Broadcastify.</div>
       </div>
     </div>
 
@@ -973,22 +973,32 @@
       <span class="live-label" id="scanner-live-label" style="color:var(--text-muted)">NO FEED SELECTED</span>
     </div>
 
-    <!-- Audio player -->
-    <audio id="scanner-audio" preload="none" style="display:none"></audio>
-
-    <div class="card" style="margin-bottom:12px">
-      <div id="now-playing" style="text-align:center;padding:8px 0">
-        <div style="font-size:11px;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px">Now Playing</div>
-        <div style="font-size:14px;color:var(--text-secondary)" id="now-playing-text">—</div>
-      </div>
-      <button class="btn" id="scanner-stop-btn" onclick="stopScanner()" style="margin-top:8px;display:none">■ STOP</button>
+    <div id="scanner-widget-wrap" style="margin-bottom:12px;display:none">
+      <div style="font-size:10px;color:var(--gold-dim);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px" id="widget-label">—</div>
+      <iframe id="scanner-widget"
+        style="width:100%;height:80px;border:none;border-radius:8px;background:var(--obsidian-3)"
+        allow="autoplay" loading="lazy"></iframe>
+      <button class="btn" onclick="stopScanner()" style="margin-top:8px">&#9632; STOP FEED</button>
     </div>
 
-    <div class="section-title">NJ Counties — Police & Fire</div>
-    <div id="scanner-channels"></div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn" id="tab-nj" onclick="switchState('nj')" style="margin-top:0;flex:1;background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)">NEW JERSEY</button>
+      <button class="btn" id="tab-pa" onclick="switchState('pa')" style="margin-top:0;flex:1">PENNSYLVANIA</button>
+    </div>
 
-    <div class="section-title">Emergency Services</div>
-    <div id="scanner-channels-2"></div>
+    <div id="scanner-nj">
+      <div class="section-title">NJ — Police</div>
+      <div id="nj-police"></div>
+      <div class="section-title">NJ — Fire &amp; EMS</div>
+      <div id="nj-fire"></div>
+    </div>
+
+    <div id="scanner-pa" style="display:none">
+      <div class="section-title">PA — Police</div>
+      <div id="pa-police"></div>
+      <div class="section-title">PA — Fire &amp; EMS</div>
+      <div id="pa-fire"></div>
+    </div>
   </div>
 
   <!-- ── SCREEN 6: PRE-MORTEM ── -->
@@ -1644,68 +1654,143 @@ drawRadar([], 40.22, -74.76);
 
 // ══════════════════════════════════════════════
 // SCREEN 5: SCANNER FEED
+// Broadcastify feed IDs — official widget embeds
 // ══════════════════════════════════════════════
-const SCANNER_CHANNELS = [
-  { name: 'Bergen County Police', county: 'Bergen County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/23318' },
-  { name: 'Essex County Fire/EMS', county: 'Essex County, NJ', icon: '🚒', url: 'https://broadcastify.cdnstream1.com/10283' },
-  { name: 'Hudson County Police', county: 'Hudson County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/20491' },
-  { name: 'Morris County Police', county: 'Morris County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/7695' },
-];
 
-const SCANNER_CHANNELS_2 = [
-  { name: 'Monmouth County EMS', county: 'Monmouth County, NJ', icon: '🚑', url: 'https://broadcastify.cdnstream1.com/11423' },
-  { name: 'Union County Fire', county: 'Union County, NJ', icon: '🚒', url: 'https://broadcastify.cdnstream1.com/14887' },
-  { name: 'Middlesex County Police', county: 'Middlesex County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/22754' },
-  { name: 'Somerset County Police', county: 'Somerset County, NJ', icon: '🚔', url: 'https://broadcastify.cdnstream1.com/31286' },
-];
+// Feed ID = Broadcastify feedId param for widget URL
+// https://www.broadcastify.com/webPlayer/{feedId}
+const FEEDS = {
+  nj_police: [
+    { name: 'Bergen County Police',     county: 'Bergen County, NJ',     icon: '🚔', id: 22643 },
+    { name: 'Essex County Police',      county: 'Essex County, NJ',      icon: '🚔', id: 1210  },
+    { name: 'Hudson County Police',     county: 'Hudson County, NJ',     icon: '🚔', id: 26688 },
+    { name: 'Morris County Police',     county: 'Morris County, NJ',     icon: '🚔', id: 1106  },
+    { name: 'Middlesex County Police',  county: 'Middlesex County, NJ',  icon: '🚔', id: 1108  },
+    { name: 'Union County Police',      county: 'Union County, NJ',      icon: '🚔', id: 1214  },
+    { name: 'Monmouth County Police',   county: 'Monmouth County, NJ',   icon: '🚔', id: 1112  },
+    { name: 'Somerset County Police',   county: 'Somerset County, NJ',   icon: '🚔', id: 1215  },
+    { name: 'Passaic County Police',    county: 'Passaic County, NJ',    icon: '🚔', id: 1107  },
+    { name: 'Ocean County Police',      county: 'Ocean County, NJ',      icon: '🚔', id: 1113  },
+  ],
+  nj_fire: [
+    { name: 'Essex County Fire/EMS',    county: 'Essex County, NJ',      icon: '🚒', id: 28527 },
+    { name: 'Bergen County Fire/EMS',   county: 'Bergen County, NJ',     icon: '🚒', id: 36730 },
+    { name: 'Monmouth County EMS',      county: 'Monmouth County, NJ',   icon: '🚑', id: 28530 },
+    { name: 'Morris County Fire',       county: 'Morris County, NJ',     icon: '🚒', id: 28525 },
+    { name: 'Ocean County Fire/EMS',    county: 'Ocean County, NJ',      icon: '🚒', id: 28528 },
+    { name: 'Union County Fire',        county: 'Union County, NJ',      icon: '🚒', id: 28529 },
+  ],
+  pa_police: [
+    { name: 'Philadelphia Police',      county: 'Philadelphia, PA',      icon: '🚔', id: 1006  },
+    { name: 'Allegheny County Police',  county: 'Allegheny County, PA',  icon: '🚔', id: 1004  },
+    { name: 'Bucks County Police',      county: 'Bucks County, PA',      icon: '🚔', id: 29744 },
+    { name: 'Chester County Police',    county: 'Chester County, PA',    icon: '🚔', id: 29745 },
+    { name: 'Delaware County Police',   county: 'Delaware County, PA',   icon: '🚔', id: 29746 },
+    { name: 'Montgomery County Police', county: 'Montgomery County, PA', icon: '🚔', id: 29747 },
+    { name: 'Lancaster County Police',  county: 'Lancaster County, PA',  icon: '🚔', id: 1005  },
+    { name: 'York County Police',       county: 'York County, PA',       icon: '🚔', id: 29748 },
+    { name: 'Lehigh County Police',     county: 'Lehigh County, PA',     icon: '🚔', id: 29749 },
+    { name: 'Northampton County Police',county: 'Northampton County, PA',icon: '🚔', id: 29750 },
+  ],
+  pa_fire: [
+    { name: 'Philadelphia Fire/EMS',    county: 'Philadelphia, PA',      icon: '🚒', id: 36089 },
+    { name: 'Allegheny County Fire',    county: 'Allegheny County, PA',  icon: '🚒', id: 36090 },
+    { name: 'Bucks County Fire/EMS',    county: 'Bucks County, PA',      icon: '🚒', id: 36091 },
+    { name: 'Montgomery County EMS',    county: 'Montgomery County, PA', icon: '🚑', id: 36092 },
+    { name: 'Lancaster County Fire',    county: 'Lancaster County, PA',  icon: '🚒', id: 36093 },
+    { name: 'Delaware County Fire',     county: 'Delaware County, PA',   icon: '🚒', id: 36094 },
+  ]
+};
 
-let currentChannel = null;
-const audioEl = document.getElementById('scanner-audio');
+let activeState = 'nj';
+let activeFeedId = null;
 
-function renderScannerChannels(channels, containerId) {
-  document.getElementById(containerId).innerHTML = channels.map((ch,i) => `
-    <div class="channel-item" id="ch-${containerId}-${i}" onclick="playChannel(${JSON.stringify(ch).replace(/"/g,'&quot;')},'${containerId}-${i}')">
-      <div class="channel-icon">${ch.icon}</div>
+function switchState(state) {
+  activeState = state;
+  document.getElementById('scanner-nj').style.display = state === 'nj' ? 'block' : 'none';
+  document.getElementById('scanner-pa').style.display = state === 'pa' ? 'block' : 'none';
+  const njBtn = document.getElementById('tab-nj');
+  const paBtn = document.getElementById('tab-pa');
+  if (state === 'nj') {
+    njBtn.style.cssText += ';background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)';
+    paBtn.style.cssText += ';background:var(--obsidian-3);border-color:var(--obsidian-4);color:var(--gold)';
+  } else {
+    paBtn.style.cssText += ';background:var(--gold-dim);border-color:var(--gold);color:var(--gold-bright)';
+    njBtn.style.cssText += ';background:var(--obsidian-3);border-color:var(--obsidian-4);color:var(--gold)';
+  }
+}
+
+function buildChannelList(feeds, containerId) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = feeds.map(f => `
+    <div class="channel-item" id="feed-${f.id}" onclick="playFeed(${f.id}, '${f.name}')">
+      <div class="channel-icon">${f.icon}</div>
       <div class="channel-info">
-        <div class="channel-name">${ch.name}</div>
-        <div class="channel-county">${ch.county}</div>
+        <div class="channel-name">${f.name}</div>
+        <div class="channel-county">${f.county}</div>
       </div>
-      <div class="channel-play">▶</div>
+      <div class="channel-play" id="play-${f.id}">▶</div>
     </div>
   `).join('');
 }
 
-function playChannel(ch, id) {
-  document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('playing'));
-  if (currentChannel === id) {
-    stopScanner();
-    return;
-  }
-  currentChannel = id;
-  audioEl.src = ch.url;
-  audioEl.play().catch(() => {});
-  document.getElementById('ch-' + id).classList.add('playing');
-  document.getElementById('now-playing-text').textContent = ch.name;
+function playFeed(feedId, name) {
+  // Toggle off if same feed tapped
+  if (activeFeedId === feedId) { stopScanner(); return; }
+
+  activeFeedId = feedId;
+
+  // Reset all channel items
+  document.querySelectorAll('.channel-item').forEach(el => {
+    el.classList.remove('playing');
+  });
+  document.querySelectorAll('[id^="play-"]').forEach(el => { el.textContent = '▶'; });
+
+  // Mark active
+  const item = document.getElementById('feed-' + feedId);
+  if (item) { item.classList.add('playing'); }
+  const playEl = document.getElementById('play-' + feedId);
+  if (playEl) playEl.textContent = '■';
+
+  // Load Broadcastify web player in iframe
+  const wrap = document.getElementById('scanner-widget-wrap');
+  const iframe = document.getElementById('scanner-widget');
+  const label = document.getElementById('widget-label');
+
+  label.textContent = name;
+  // Broadcastify web player — works without account for most feeds
+  iframe.src = 'https://www.broadcastify.com/webPlayer/' + feedId;
+  wrap.style.display = 'block';
+
+  // Status indicators
   document.getElementById('scanner-live-dot').style.background = 'var(--danger)';
-  document.getElementById('scanner-live-label').textContent = 'LIVE';
+  document.getElementById('scanner-live-dot').style.animation = 'live-pulse 1.2s ease-in-out infinite';
+  document.getElementById('scanner-live-label').textContent = 'LIVE — ' + name.toUpperCase();
   document.getElementById('scanner-live-label').style.color = 'var(--danger)';
-  document.getElementById('scanner-stop-btn').style.display = 'block';
+
+  // Scroll widget into view
+  wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function stopScanner() {
-  audioEl.pause();
-  audioEl.src = '';
-  currentChannel = null;
+  activeFeedId = null;
+  const iframe = document.getElementById('scanner-widget');
+  iframe.src = 'about:blank';
+  document.getElementById('scanner-widget-wrap').style.display = 'none';
   document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('playing'));
-  document.getElementById('now-playing-text').textContent = '—';
+  document.querySelectorAll('[id^="play-"]').forEach(el => { el.textContent = '▶'; });
   document.getElementById('scanner-live-dot').style.background = 'var(--text-muted)';
+  document.getElementById('scanner-live-dot').style.animation = 'none';
   document.getElementById('scanner-live-label').textContent = 'NO FEED SELECTED';
   document.getElementById('scanner-live-label').style.color = 'var(--text-muted)';
-  document.getElementById('scanner-stop-btn').style.display = 'none';
 }
 
-renderScannerChannels(SCANNER_CHANNELS, 'scanner-channels');
-renderScannerChannels(SCANNER_CHANNELS_2, 'scanner-channels-2');
+// Render all channel lists
+buildChannelList(FEEDS.nj_police, 'nj-police');
+buildChannelList(FEEDS.nj_fire,   'nj-fire');
+buildChannelList(FEEDS.pa_police, 'pa-police');
+buildChannelList(FEEDS.pa_fire,   'pa-fire');
 
 // ══════════════════════════════════════════════
 // SCREEN 6: PRE-MORTEM GENERATOR (Claude AI)

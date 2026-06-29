@@ -1227,6 +1227,10 @@ function switchTab(name, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   btn.classList.add('active');
+  if (name === 'cams') {
+    const grid = document.getElementById('cam-grid');
+    if (grid && grid.innerHTML === '') renderCamGrid();
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -2313,14 +2317,7 @@ function closeCamViewer() {
   document.querySelectorAll('.cam-thumb').forEach(el => el.classList.remove('active-cam'));
 }
 
-// Init cam grid when tab is first opened
-const origSwitchTab = switchTab;
-function switchTab(name, btn) {
-  origSwitchTab(name, btn);
-  if (name === 'cams' && document.getElementById('cam-grid').innerHTML === '') {
-    renderCamGrid();
-  }
-}
+// Cam grid renders on first tab open via switchTab check below
 </script>
 
 <script>

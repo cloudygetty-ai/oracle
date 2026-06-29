@@ -1,0 +1,46 @@
+{
+  "name": "ORACLE",
+  "short_name": "ORACLE",
+  "description": "Six tactical tools. Zero noise. Always watching.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0c",
+  "theme_color": "#0a0a0c",
+  "scope": "/",
+  "lang": "en-US",
+  "categories": ["utilities", "productivity"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzBhMGEwYyIgcng9IjM4Ii8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iNDgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSI0Ii8+PGNpcmNsZSBjeD0iOTYiIGN5PSI5NiIgcj0iMjQiIGZpbGw9IiNjOWE4NGMiIG9wYWNpdHk9IjAuNiIvPjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9IjEwIiBmaWxsPSIjYzlhODRjIi8+PGxpbmUgeDE9Ijk2IiB5MT0iMzIiIHgyPSI5NiIgeTI9IjYwIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMyIgb3BhY2l0eT0iMC40Ii8+PGxpbmUgeDE9Ijk2IiB5MT0iMTMyIiB4Mj0iOTYiIHkyPSIxNjAiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIwLjQiLz48bGluZSB4MT0iMzIiIHkxPSI5NiIgeDI9IjYwIiB5Mj0iOTYiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSIzIiBvcGFjaXR5PSIwLjQiLz48bGluZSB4MT0iMTMyIiB5MT0iOTYiIHgyPSIxNjAiIHkyPSI5NiIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjMiIG9wYWNpdHk9IjAuNCIvPjwvc3ZnPg==",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0iIzBhMGEwYyIgcng9IjEwMiIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTI4IiBmaWxsPSJub25lIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iMTAiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjY0IiBmaWxsPSIjYzlhODRjIiBvcGFjaXR5PSIwLjYiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNTYiIHI9IjI4IiBmaWxsPSIjYzlhODRjIi8+PGxpbmUgeDE9IjI1NiIgeTE9Ijg2IiB4Mj0iMjU2IiB5Mj0iMTYwIiBzdHJva2U9IiNjOWE4NGMiIHN0cm9rZS13aWR0aD0iOCIgb3BhY2l0eT0iMC40Ii8+PGxpbmUgeDE9IjI1NiIgeTE9IjM1MiIgeDI9IjI1NiIgeTI9IjQyNiIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjgiIG9wYWNpdHk9IjAuNCIvPjxsaW5lIHgxPSI4NiIgeTE9IjI1NiIgeDI9IjE2MCIgeTI9IjI1NiIgc3Ryb2tlPSIjYzlhODRjIiBzdHJva2Utd2lkdGg9IjgiIG9wYWNpdHk9IjAuNCIvPjxsaW5lIHgxPSIzNTIiIHkxPSIyNTYiIHgyPSI0MjYiIHkyPSIyNTYiIHN0cm9rZT0iI2M5YTg0YyIgc3Ryb2tlLXdpZHRoPSI4IiBvcGFjaXR5PSIwLjQiLz48L3N2Zz4=",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Speed Cameras",
+      "short_name": "Cameras",
+      "description": "NJ speed camera map",
+      "url": "/#cameras",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Pre-Mortem",
+      "short_name": "Oracle",
+      "description": "AI plan stress-tester",
+      "url": "/#premortem",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
